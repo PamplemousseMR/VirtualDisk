@@ -1,6 +1,10 @@
-# Discord
+# VirtualDisk
 
 The goal of this project is to implement a virtual hard drive disk.
+
+## Travis
+
+[![Build Status](https://travis-ci.com/PamplemousseMR/VirtualDisk.svg?branch=master)](https://travis-ci.com/PamplemousseMR/VirtualDisk)
 
 ## Getting Started
 

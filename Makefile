@@ -2,7 +2,7 @@ OUTDIR = OFiles/
 EXEC = disk
 
 CC = gcc
-CCFLAGS_STD = -Wall -O3 -ansi -pedantic -o
+CCFLAGS_STD = -Werror -Wall -O3 -pedantic -o
 CCFLAGS = $(CC) $(CCFLAGS_STD)
 
 all : 

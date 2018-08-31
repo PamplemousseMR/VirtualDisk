@@ -41,7 +41,11 @@ void prog()
     while(cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t')
     {
         printf("%s%c",name,ext);
-        fgets(cmd, 128, stdin);
+        if(fgets(cmd, 128, stdin) == NULL) 
+        {
+            perror("Erreur fgets");
+            exit(EXIT_FAILURE);
+        }
         if(cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\n')
             displayDirectoryDisk(d);
         else if(cmd[0] == 'm' && cmd[1] == 'k' && cmd[2] == 'd' && cmd[3] == 'i' && cmd[4] == 'r' && cmd[5] == ' ')
@@ -69,9 +73,17 @@ void prog()
         else if(cmd[0] == 'c' && cmd[1] == 'r' && cmd[2] == 'e' && cmd[3] == 'a' && cmd[4] == 't' && cmd[5] == 'e' && cmd[6] == '\n')
         {
             printf("\tTaille des blocks ? : ");
-            fgets(blockSize, 128, stdin);
+            if(fgets(blockSize, 128, stdin) == NULL) 
+            {
+                perror("Erreur fgets");
+                exit(EXIT_FAILURE);
+            }
             printf("\tNombre de blocks ? : ");
-            fgets(nbBloc, 128, stdin);
+            if(fgets(nbBloc, 128, stdin) == NULL) 
+            {
+                perror("Erreur fgets");
+                exit(EXIT_FAILURE);
+            }
             temp = createDisk(atoi(blockSize) , atoi(nbBloc));
             if(temp != NULL)
             {
@@ -91,7 +103,11 @@ void prog()
             if(checkFile(d,toChar(&cmd[4])) == 1)
             {
                 printFileContentDisk(d, toChar(&cmd[4]));
-                fgets(data, 4096, stdin);
+                if(fgets(data, 4096, stdin) == NULL) 
+                {
+                    perror("Erreur fgets");
+                    exit(EXIT_FAILURE);
+                }
                 addToFileDisk(d, toChar(&cmd[4]), data);
             }
             else printf("le fichier n'existe pas\n");
