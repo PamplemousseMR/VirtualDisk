@@ -2,8 +2,9 @@ OUTDIR = OFiles/
 EXEC = disk
 
 CC = gcc
-CCFLAGS_STD = -Werror -Wall -O3 -pedantic -o
-CCFLAGS = $(CC) $(CCFLAGS_STD)
+CCFLAGS_STD = -Werror -Wall -O3 -pedantic
+CCFLAGS = $(CC) $(CCFLAGS_STD) -ansi -o
+CCFLAGS_MAIN = $(CC) $(CCFLAGS_STD) -o
 
 all : 
 	make disk
@@ -16,7 +17,7 @@ disk_directory :
 	mkdir -p $(OUTDIR)
 
 disk_compile : $(OBJETS)
-	$(CCFLAGS) $(EXEC) $(OBJETS)
+	$(CCFLAGS_MAIN) $(EXEC) $(OBJETS)
 
 $(OUTDIR)main.o : Sources/main.c Sources/testfichier.h Sources/disquevirtuel.h
 	$(CCFLAGS) $(OUTDIR)main.o -c Sources/main.c
