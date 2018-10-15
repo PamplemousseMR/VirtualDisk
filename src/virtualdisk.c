@@ -8,7 +8,7 @@ disk_t* createDisk(int size, int nbBlock)
 {
     int* pi;
     int i;
-    bloc_t** ppb;
+    /*bloc_t** ppb;*/
     char* name = ".";
     header h = _HEADER_DIRECTORY_;
     if (size >= _MIN_BLOC_SIZE_ && nbBlock >= _MIN_BLOC_NUMBER_)
@@ -32,11 +32,15 @@ disk_t* createDisk(int size, int nbBlock)
 
         res->m_blocs = (bloc_t**)malloc(sizeof(bloc_t*) * nbBlock);
 
-        for (ppb = res->m_blocs; ppb < res->m_blocs + nbBlock; ppb++)
+        /*for (ppb = res->m_blocs; ppb < res->m_blocs + nbBlock; ppb++)
         {
             (*ppb) = createBloc(size, "");
+        }*/
+        for(i=0 ; i<nbBlock ; ++i)
+        {
+            res->m_blocs[i] = createBloc(size, "");
         }
-        addCharDataBloc(res->m_blocs[res->m_currentDirectory],h);
+        addCharDataBloc(res->m_blocs[res->m_currentDirectory], h);
         for (i = 0; i < _NAME_SIZE_; i++)
         {
             if (i < strlen(name))
@@ -855,7 +859,6 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
             }
             free(name);
         }
-        si--;
         if(si == 0)
         {
             free(map);

@@ -99,7 +99,7 @@ int addCharDataBloc(bloc_t* b,char data)
             {
                 data = '0';
             }
-            strcpy(b->m_data + b->m_currentPosition, &data);
+            memcpy(b->m_data + b->m_currentPosition, &data, sizeof(data));
             b->m_currentPosition++;
             return 1;
         }
