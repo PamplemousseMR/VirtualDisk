@@ -1,7 +1,5 @@
 #include "block.h"
 
-/*static int destroyBloc(bloc_t*);*/
-
 bloc_t* createBloc(int size, char* data) {
 
     bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
@@ -53,17 +51,20 @@ bloc_t* createFromFileBloc(int fd) {
 
 }
 
-/*int destroyBloc(bloc_t* b) {
-
-    if (b != NULL) {
-
+int destroyBloc(bloc_t* b)
+{
+    if (b != NULL)
+    {
         free(b->data);
         free(b);
         return 1;
-
-    } else fprintf(stderr, "[destroyBloc] paramètre NULL");
+    }
+    else
+    {
+        fprintf(stderr, "[destroyBloc] paramètre NULL");
+    }
     return 0;
-}*/
+}
 
 int addDataBloc(bloc_t* b, char* data) 
 {
@@ -111,7 +112,7 @@ char* getDataBloc(bloc_t* b,int i)
             return NULL;
         while((c=b->data[i + taille]) != _END_OF_STRING_)
             taille++;
-        res = (char*)malloc(sizeof(char) * taille);
+        res = (char*)malloc(sizeof(char) * taille + sizeof(char));
         for(j=0 ; j<taille ; j++)
             res[j] = '0';
         taille = 0;
@@ -142,6 +143,7 @@ char getCharDataBloc(bloc_t* b,int i)
 
 int getIntDataBloc(bloc_t* b,int i)
 {
+    int value;
     if (b != NULL)
     {
         char c;
@@ -149,14 +151,17 @@ int getIntDataBloc(bloc_t* b,int i)
         int taille = 0;
         if(i>b->currentPosition)
             return 0;
-        res = (char*)malloc(sizeof(char) * sizeof(int));
+        res = (char*)malloc(sizeof(char) * sizeof(int) + sizeof(char));
         while(taille != 4)
         {
             c = b->data[i + taille];
             res[taille] = c;
             taille++;
         }
-        return atoi(res);
+        res[sizeof(int)] = '\0';
+        value = atoi(res);
+        free(res);
+        return value;
 
     } else fprintf(stderr, "[getIntDataBloc] paramètre NULL");
 
@@ -178,7 +183,7 @@ int addIntDataBloc(bloc_t* b,int num)
         }
         if(strlen(n) != sizeof(int))
         {
-            to = (char*)malloc(sizeof(char) * sizeof(int));
+            to = (char*)malloc(sizeof(char) * sizeof(int) + sizeof(char));
             for(i=0 ; i<sizeof(int) ; i++)
             {
                 if(i>=sizeof(int) - strlen(n))
@@ -186,6 +191,7 @@ int addIntDataBloc(bloc_t* b,int num)
                 else
                     to[i] = '0';
             }
+            to[sizeof(int)] = '\0';
             if(addDataBloc(b,to) == 0)
             {
                 fprintf(stderr, "[addIntDataBloc] pas assez de place");

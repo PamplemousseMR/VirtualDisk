@@ -33,13 +33,17 @@ void prog()
     disk_t* temp;
     char blockSize[128];
     char nbBloc[128];
-    char cmd[128];
+    char cmd[128] = {'0'};
     char data[4096];
+    char* tempChar;
+    char* tempChar2;
     char* name = "C";
     char ext = ':';
     disk_t* d = createDisk(512, 32);
     while(cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t')
     {
+        memset(cmd, '\0', 128);
+
         printf("%s%c",name,ext);
         if(fgets(cmd, 128, stdin) == NULL)
         {
@@ -49,17 +53,41 @@ void prog()
         if(cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\n')
             displayDirectoryDisk(d);
         else if(cmd[0] == 'm' && cmd[1] == 'k' && cmd[2] == 'd' && cmd[3] == 'i' && cmd[4] == 'r' && cmd[5] == ' ')
-            addDirectoryDisk(d,atoChar(&cmd[6]));
+        {
+            tempChar = atoChar(&cmd[6]);
+            addDirectoryDisk(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 't' && cmd[1] == 'o' && cmd[2] == 'u' && cmd[3] == 'c' && cmd[4] == 'h' && cmd[5] == ' ')
-            addFileDisk(d,atoChar(&cmd[6]));
+        {
+            tempChar = atoChar(&cmd[6]);
+            addFileDisk(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 'c' && cmd[1] == 'd'  && cmd[2] == ' ')
-            moveToDirectory(d,atoChar(&cmd[3]));
+        {
+            tempChar = atoChar(&cmd[3]);
+            moveToDirectory(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 'r' && cmd[1] == 'm'  && cmd[2] == ' ')
-            removeFile(d,atoChar(&cmd[3]));
+        {
+            tempChar = atoChar(&cmd[3]);
+            removeFile(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 's' && cmd[1] == 'a' && cmd[2] == 'v' && cmd[3] == 'e'  && cmd[4] == ' ')
-            saveDisk(d,atoChar(&cmd[5]));
+        {
+            tempChar = atoChar(&cmd[5]);
+            saveDisk(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 'r' && cmd[1] == 'm' && cmd[2] == 'd' && cmd[3] == 'i'  && cmd[4] == 'r' && cmd[5] == ' ')
-            rmdirDisk(d,atoChar(&cmd[6]));
+        {
+            tempChar = atoChar(&cmd[6]);
+            rmdirDisk(d, tempChar);
+            free(tempChar);
+        }
         else if(cmd[0] == 'l' && cmd[1] == 'o' && cmd[2] == 'a' && cmd[3] == 'd' && cmd[4] == ' ')
         {
             temp = createFromFileDisk(atoChar(&cmd[5]));
@@ -100,25 +128,39 @@ void prog()
             displayDisk(d);
         else if(cmd[0] == 'v' && cmd[1] == 'i' && cmd[2] == 'm' && cmd[3] == ' ')
         {
-            if(checkFile(d,atoChar(&cmd[4])) == 1)
+            tempChar = atoChar(&cmd[4]);
+            if(checkFile(d, tempChar) == 1)
             {
-                printFileContentDisk(d, atoChar(&cmd[4]));
+                tempChar2 = atoChar(&cmd[4]);
+                printFileContentDisk(d, tempChar2);
+                free(tempChar2);
                 if(fgets(data, 4096, stdin) == NULL)
                 {
                     fprintf(stderr, "Erreur fgets");
                     exit(EXIT_FAILURE);
                 }
-                addToFileDisk(d, atoChar(&cmd[4]), data);
+                tempChar2 = atoChar(&cmd[4]);
+                addToFileDisk(d, tempChar2, data);
+                free(tempChar2);
             }
-            else printf("le fichier n'existe pas\n");
+            else
+            {
+                printf("le fichier n'existe pas\n");
+            }
+            free(tempChar);
         }
         else if(cmd[0] == 'k' && cmd[1] == 'a' && cmd[2] == 't' && cmd[3] == 'e' && cmd[4] == ' ')
-            printFileContentDisk(d, atoChar(&cmd[5]));
+        {
+            tempChar = atoChar(&cmd[5]);
+            printFileContentDisk(d, tempChar);
+            free(tempChar);
+        }
         else if (cmd[0] == 'p' && cmd[1]=='w' && cmd[2]=='d' && cmd[3] == '\n')
             pwdDisk(d);
         else if( ( cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t' ) && cmd[0] != '\n')
             printf("%s%c unknown command\n",name,ext);
     }
+    destroyDisk(d);
 }
 
 int main()

@@ -23,8 +23,6 @@ static const int _ADDRESS_SIZE_ = sizeof(address);
 static const char _HEADER_DIRECTORY_ = 'd';
 static const char _HEADER_FILE_ = 'f';
 
-
-
 typedef struct {
 
 	int nbBlocs;

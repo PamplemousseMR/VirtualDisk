@@ -18,6 +18,7 @@ typedef struct {
 } bloc_t;
 
 bloc_t* createBloc(int, char*);
+int destroyBloc(bloc_t*);
 bloc_t* createFromFileBloc(int);
 int addDataBloc(bloc_t*, char*);
 int addCharDataBloc(bloc_t*,char);
