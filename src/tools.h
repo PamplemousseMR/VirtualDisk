@@ -7,7 +7,7 @@
 
 int toDecimal(char*);
 char* toBinary(int);
-char* itos(int);
-char* toChar(char data[]);
+char* itoChar(int);
+char* atoChar(char data[]);
 
 #endif

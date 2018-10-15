@@ -1,41 +1,43 @@
-#include "bloc.h"
+#include "block.h"
+
+/*static int destroyBloc(bloc_t*);*/
 
 bloc_t* createBloc(int size, char* data) {
 
-	bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
-	res->size = size;
-	res->data = (char*)malloc(sizeof(char) * res->size);
-	res->currentPosition = 0;
-	if (data != NULL) {
+    bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
+    res->size = size;
+    res->data = (char*)malloc(sizeof(char) * res->size);
+    res->currentPosition = 0;
+    if (data != NULL) {
 
-                if (strlen(data) <= res->size) {
+        if (strlen(data) <= res->size) {
 
-			strcpy(res->data, data);
-			res->currentPosition = strlen(data);
+            strcpy(res->data, data);
+            res->currentPosition = strlen(data);
 
-		} else perror("[createBloc] longueur de la chaine supérieur à la taille du bloc");
+        } else fprintf(stderr, "[createBloc] longueur de la chaine supérieur à la taille du bloc");
 
-	}
+    }
 
-	return res;
+    return res;
 
 }
 
 bloc_t* createFromFileBloc(int fd) {
 
-	bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
+    bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
 
-	int readRes = read(fd, &(res->size), sizeof(int));
+    int readRes = read(fd, &(res->size), sizeof(int));
     if(readRes == -1)
     {
-    	perror("[createFromFileBloc] Erreur lors de la lecture de la taille");
-      	exit(EXIT_FAILURE);
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la taille");
+        exit(EXIT_FAILURE);
     }
     readRes = read(fd, &(res->currentPosition), sizeof(int));
     if(readRes == -1)
     {
-    	perror("[createFromFileBloc] Erreur lors de la lecture de la position courante");
-      	exit(EXIT_FAILURE);
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante");
+        exit(EXIT_FAILURE);
     }
 
     res->data = (char*)malloc(sizeof(char) * res->size);
@@ -43,42 +45,42 @@ bloc_t* createFromFileBloc(int fd) {
     readRes = read(fd, res->data, sizeof(char) * res->size);
     if(readRes == -1)
     {
-    	perror("[createFromFileBloc] Erreur lors de la lecture de la position courante");
-      	exit(EXIT_FAILURE);
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante");
+        exit(EXIT_FAILURE);
     }
 
-	return res;
+    return res;
 
 }
 
-int destroyBloc(bloc_t* b) {
+/*int destroyBloc(bloc_t* b) {
 
-	if (b != NULL) {
+    if (b != NULL) {
 
-		free(b->data);
-		free(b);
-		return 1;
+        free(b->data);
+        free(b);
+        return 1;
 
-	} else perror("[destroyBloc] paramètre NULL");
-	return 0;
-}
+    } else fprintf(stderr, "[destroyBloc] paramètre NULL");
+    return 0;
+}*/
 
 int addDataBloc(bloc_t* b, char* data) 
 {
-	if(b != NULL)
-	{
-		if (data != NULL) 
-		{
-			if (strlen(data) <= b->size - b->currentPosition) 
-			{
-				strcpy(b->data + b->currentPosition, data);
-				b->currentPosition = b->currentPosition + strlen(data);
-				return 1;
-			} 
-			else perror("[addDataBloc] longueur de la chaine supérieur à la taille du bloc");
-		}
-	}else printf("[addDataBloc] paramètre NULL");
-	return 0;
+    if(b != NULL)
+    {
+        if (data != NULL)
+        {
+            if (strlen(data) <= b->size - b->currentPosition)
+            {
+                strcpy(b->data + b->currentPosition, data);
+                b->currentPosition = b->currentPosition + strlen(data);
+                return 1;
+            }
+            else fprintf(stderr, "[addDataBloc] longueur de la chaine supérieur à la taille du bloc");
+        }
+    }else printf("[addDataBloc] paramètre NULL");
+    return 0;
 }
 
 int addCharDataBloc(bloc_t* b,char data)
@@ -93,14 +95,14 @@ int addCharDataBloc(bloc_t* b,char data)
             b->currentPosition++;
             return 1;
         }
-        else perror("[addCharDataBloc] longueur de la chaine supérieur à la taille du bloc");
+        else fprintf(stderr, "[addCharDataBloc] longueur de la chaine supérieur à la taille du bloc");
     }else printf("[addCharDataBloc] paramètre NULL");
     return 0;
 }
 
 char* getDataBloc(bloc_t* b,int i)
 {
-     if (b != NULL) {
+    if (b != NULL) {
         char c;
         char* res;
         int j;
@@ -121,7 +123,7 @@ char* getDataBloc(bloc_t* b,int i)
         res[taille] = '\0';
         return res;
 
-    } else perror("[getDataBloc] paramètre NULL");
+    } else fprintf(stderr, "[getDataBloc] paramètre NULL");
 
     return 0;
 }
@@ -133,18 +135,18 @@ char getCharDataBloc(bloc_t* b,int i)
             return '0';
         return b->data[i];
 
-    } else perror("[getCharDataBloc] paramètre NULL");
+    } else fprintf(stderr, "[getCharDataBloc] paramètre NULL");
 
     return 0;
 }
 
 int getIntDataBloc(bloc_t* b,int i)
 {
-    if (b != NULL) 
+    if (b != NULL)
     {
         char c;
         char* res;
-        int taille = 0;   
+        int taille = 0;
         if(i>b->currentPosition)
             return 0;
         res = (char*)malloc(sizeof(char) * sizeof(int));
@@ -156,7 +158,7 @@ int getIntDataBloc(bloc_t* b,int i)
         }
         return atoi(res);
 
-    } else perror("[getIntDataBloc] paramètre NULL");
+    } else fprintf(stderr, "[getIntDataBloc] paramètre NULL");
 
     return 0;
 }
@@ -168,10 +170,10 @@ int addIntDataBloc(bloc_t* b,int num)
         char* to;
         int i;
         int j=0;
-        char* n = itos(num);
+        char* n = itoChar(num);
         if(strlen(n) > sizeof(int))
         {
-            perror("[addIntDataBloc] valeur trop grande");
+            fprintf(stderr, "[addIntDataBloc] valeur trop grande");
             return 0;
         }
         if(strlen(n) != sizeof(int))
@@ -186,54 +188,54 @@ int addIntDataBloc(bloc_t* b,int num)
             }
             if(addDataBloc(b,to) == 0)
             {
-                perror("[addIntDataBloc] pas assez de place");
+                fprintf(stderr, "[addIntDataBloc] pas assez de place");
                 return 0;
             }
             free(to);
         }
         else if(addDataBloc(b,n) == 0)
         {
-            perror("[addIntDataBloc] pas assez de place");
+            fprintf(stderr, "[addIntDataBloc] pas assez de place");
             return 0;
         }
         free(n);
         return 1;
-    }else perror("[addIntDataBloc] paramètre NULL");
+    }else fprintf(stderr, "[addIntDataBloc] paramètre NULL");
     return 0;
 }
 
 void displayBloc(bloc_t* b) 
 {
-	if(b != NULL)
-		printf("[bloc]\n\tsize : %d\n\tcurrent position : %d\n\tdata : %s\n",b->size,b->currentPosition,b->data);
-	else perror("[displayBloc] paramètre NULL");
+    if(b != NULL)
+        printf("[bloc]\n\tsize : %d\n\tcurrent position : %d\n\tdata : %s\n",b->size,b->currentPosition,b->data);
+    else fprintf(stderr, "[displayBloc] paramètre NULL");
 }
 
 int saveBloc(bloc_t* b, int fd) {
 
-	if (b != NULL) {
+    if (b != NULL) {
 
-		if(write(fd, &(b->size), sizeof(int)) == -1) 
-	  	{
-	    	perror("[saveBloc] Erreur write");
-	    	exit(EXIT_FAILURE);
-	  	}
+        if(write(fd, &(b->size), sizeof(int)) == -1)
+        {
+            fprintf(stderr, "[saveBloc] Erreur write");
+            exit(EXIT_FAILURE);
+        }
 
-	  	if(write(fd, &(b->currentPosition), sizeof(int)) == -1) 
-	  	{
-	    	perror("[saveBloc] Erreur write");
-	    	exit(EXIT_FAILURE);
-	  	}
+        if(write(fd, &(b->currentPosition), sizeof(int)) == -1)
+        {
+            fprintf(stderr, "[saveBloc] Erreur write");
+            exit(EXIT_FAILURE);
+        }
 
-		if(write(fd, b->data, sizeof(char) * b->size) == -1) 
-	  	{
-	    	perror("[saveBloc] Erreur write");
-	    	exit(EXIT_FAILURE);
-	  	}	
-	  	return 1;  	
+        if(write(fd, b->data, sizeof(char) * b->size) == -1)
+        {
+            fprintf(stderr, "[saveBloc] Erreur write");
+            exit(EXIT_FAILURE);
+        }
+        return 1;
 
-	} else perror("[saveBloc] paramètre NULL");
-	return 0;
+    } else fprintf(stderr, "[saveBloc] paramètre NULL");
+    return 0;
 
 }
 
@@ -243,7 +245,7 @@ int isFullBloc(bloc_t* b) {
 
         return b->currentPosition == b->size;
 
-    } else perror("[isFullBloc] paramètre NULL");
+    } else fprintf(stderr, "[isFullBloc] paramètre NULL");
 
     return 0;
 
@@ -251,13 +253,13 @@ int isFullBloc(bloc_t* b) {
 
 void emptyBloc(bloc_t* b)
 {
-    if (b != NULL) 
+    if (b != NULL)
     {
         int i;
         for(i=0 ; i<b->size ; i++)
             b->data[i] = '\0';
         b->currentPosition = 0;
-    } else perror("[emptyBloc] paramètre NULL");
+    } else fprintf(stderr, "[emptyBloc] paramètre NULL");
 }
 
 void removeBloc(bloc_t* b,int beg ,int end)
@@ -274,6 +276,6 @@ void removeBloc(bloc_t* b,int beg ,int end)
                 *pcd = *pcs;
             memset(b->data + beg + diff, 0, b->size-beg-diff);
         }
-        else perror("[remove] borne incorecte");
-    } else perror("[remove] paramètre NULL");
+        else fprintf(stderr, "[remove] borne incorecte");
+    } else fprintf(stderr, "[remove] paramètre NULL");
 }

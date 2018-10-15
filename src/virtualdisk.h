@@ -1,12 +1,13 @@
-#ifndef __DISQUEVIRTUEL_H__
-#define __DISQUEVIRTUEL_H__
+#ifndef __VIRTUALDISK_H__
+#define __VIRTUALDISK_H__
 
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+
 #include "tools.h"
-#include "bloc.h"
+#include "block.h"
 
 typedef char header;
 typedef int address;
@@ -39,7 +40,6 @@ disk_t* createFromFileDisk(char*);
 int destroyDisk(disk_t*);
 int displayDisk(disk_t*);
 int displayDirectoryDisk(disk_t*);
-int checkDirectory(disk_t*,char*);
 int checkFile(disk_t*,char*);
 int saveDisk(disk_t*,char*);
 void pwdDisk(disk_t*);
@@ -48,8 +48,6 @@ int addDirectoryDisk(disk_t*,char*);
 int addFileDisk(disk_t*,char*);
 int moveToDirectory(disk_t*,char*);
 int removeFile(disk_t*, char*);
-int findEmptyBloc(disk_t*);
-void removeDirectoriesRecDisk(disk_t*, bloc_t*);
 void rmdirDisk(disk_t*, char*);
 void displayTreeDisk(disk_t* d,bloc_t* b ,char* ,int* ,int);
 void addToFileDisk(disk_t*, char*, char*);

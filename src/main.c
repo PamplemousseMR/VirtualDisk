@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "disquevirtuel.h"
+#include "virtualdisk.h"
 
 void printHelp()
 {
@@ -41,28 +41,28 @@ void prog()
     while(cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t')
     {
         printf("%s%c",name,ext);
-        if(fgets(cmd, 128, stdin) == NULL) 
+        if(fgets(cmd, 128, stdin) == NULL)
         {
-            perror("Erreur fgets");
+            fprintf(stderr, "Erreur fgets");
             exit(EXIT_FAILURE);
         }
         if(cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\n')
             displayDirectoryDisk(d);
         else if(cmd[0] == 'm' && cmd[1] == 'k' && cmd[2] == 'd' && cmd[3] == 'i' && cmd[4] == 'r' && cmd[5] == ' ')
-            addDirectoryDisk(d,toChar(&cmd[6]));
+            addDirectoryDisk(d,atoChar(&cmd[6]));
         else if(cmd[0] == 't' && cmd[1] == 'o' && cmd[2] == 'u' && cmd[3] == 'c' && cmd[4] == 'h' && cmd[5] == ' ')
-            addFileDisk(d,toChar(&cmd[6]));
+            addFileDisk(d,atoChar(&cmd[6]));
         else if(cmd[0] == 'c' && cmd[1] == 'd'  && cmd[2] == ' ')
-            moveToDirectory(d,toChar(&cmd[3]));
+            moveToDirectory(d,atoChar(&cmd[3]));
         else if(cmd[0] == 'r' && cmd[1] == 'm'  && cmd[2] == ' ')
-            removeFile(d,toChar(&cmd[3]));
+            removeFile(d,atoChar(&cmd[3]));
         else if(cmd[0] == 's' && cmd[1] == 'a' && cmd[2] == 'v' && cmd[3] == 'e'  && cmd[4] == ' ')
-            saveDisk(d,toChar(&cmd[5]));
+            saveDisk(d,atoChar(&cmd[5]));
         else if(cmd[0] == 'r' && cmd[1] == 'm' && cmd[2] == 'd' && cmd[3] == 'i'  && cmd[4] == 'r' && cmd[5] == ' ')
-            rmdirDisk(d,toChar(&cmd[6]));
+            rmdirDisk(d,atoChar(&cmd[6]));
         else if(cmd[0] == 'l' && cmd[1] == 'o' && cmd[2] == 'a' && cmd[3] == 'd' && cmd[4] == ' ')
         {
-            temp = createFromFileDisk(toChar(&cmd[5]));
+            temp = createFromFileDisk(atoChar(&cmd[5]));
             if(temp != NULL)
             {
                 destroyDisk(d);
@@ -73,15 +73,15 @@ void prog()
         else if(cmd[0] == 'c' && cmd[1] == 'r' && cmd[2] == 'e' && cmd[3] == 'a' && cmd[4] == 't' && cmd[5] == 'e' && cmd[6] == '\n')
         {
             printf("\tTaille des blocks ? : ");
-            if(fgets(blockSize, 128, stdin) == NULL) 
+            if(fgets(blockSize, 128, stdin) == NULL)
             {
-                perror("Erreur fgets");
+                fprintf(stderr, "Erreur fgets");
                 exit(EXIT_FAILURE);
             }
             printf("\tNombre de blocks ? : ");
-            if(fgets(nbBloc, 128, stdin) == NULL) 
+            if(fgets(nbBloc, 128, stdin) == NULL)
             {
-                perror("Erreur fgets");
+                fprintf(stderr, "Erreur fgets");
                 exit(EXIT_FAILURE);
             }
             temp = createDisk(atoi(blockSize) , atoi(nbBloc));
@@ -100,23 +100,23 @@ void prog()
             displayDisk(d);
         else if(cmd[0] == 'v' && cmd[1] == 'i' && cmd[2] == 'm' && cmd[3] == ' ')
         {
-            if(checkFile(d,toChar(&cmd[4])) == 1)
+            if(checkFile(d,atoChar(&cmd[4])) == 1)
             {
-                printFileContentDisk(d, toChar(&cmd[4]));
-                if(fgets(data, 4096, stdin) == NULL) 
+                printFileContentDisk(d, atoChar(&cmd[4]));
+                if(fgets(data, 4096, stdin) == NULL)
                 {
-                    perror("Erreur fgets");
+                    fprintf(stderr, "Erreur fgets");
                     exit(EXIT_FAILURE);
                 }
-                addToFileDisk(d, toChar(&cmd[4]), data);
+                addToFileDisk(d, atoChar(&cmd[4]), data);
             }
             else printf("le fichier n'existe pas\n");
         }
         else if(cmd[0] == 'k' && cmd[1] == 'a' && cmd[2] == 't' && cmd[3] == 'e' && cmd[4] == ' ')
-            printFileContentDisk(d, toChar(&cmd[5]));
+            printFileContentDisk(d, atoChar(&cmd[5]));
         else if (cmd[0] == 'p' && cmd[1]=='w' && cmd[2]=='d' && cmd[3] == '\n')
             pwdDisk(d);
-        else if( ( cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t' ) && cmd[0] != '\n') 
+        else if( ( cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t' ) && cmd[0] != '\n')
             printf("%s%c unknown command\n",name,ext);
     }
 }
