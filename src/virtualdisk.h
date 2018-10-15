@@ -23,14 +23,13 @@ static const int _ADDRESS_SIZE_ = sizeof(address);
 static const char _HEADER_DIRECTORY_ = 'd';
 static const char _HEADER_FILE_ = 'f';
 
-typedef struct {
-
+typedef struct
+{
 	int nbBlocs;
 	int blocSize;
 	int currentDirectory;
 	int* bitmap;
 	bloc_t** blocs;
-    
 } disk_t;
 
 disk_t* createDisk(int, int);
