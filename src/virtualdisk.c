@@ -43,7 +43,7 @@ disk_t* createDisk(int size, int nbBlock)
             }
             else if (i == strlen(name))
             {
-                addCharDataBloc(res->blocs[res->currentDirectory],_END_OF_STRING_);
+                addCharDataBloc(res->blocs[res->currentDirectory],END_OF_STRING);
             }
             else
             {
@@ -197,12 +197,12 @@ void pwdDisk(disk_t* d) {
             /* recherche du dossier qui correspond à l'ancient iCourant pour récupérer le nom */
             
             i = 0;
-            while (getIntDataBloc(parent, i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_) != iCourant && i < parent->size / _RECORDING_)
+            while (getIntDataBloc(parent, i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_) != iCourant && i < parent->m_size / _RECORDING_)
             {
                 i++;
             }
 
-            if (i != parent->size / _RECORDING_)
+            if (i != parent->m_size / _RECORDING_)
             {
                 nom = strcat(strcat(getDataBloc(parent, i * _RECORDING_ + _HEADER_SIZE_), "/"), nom);
                 courant = parent;
@@ -244,7 +244,7 @@ void printFileContentDisk(disk_t* d, char* name) {
         if(temp != NULL && strcmp(temp,name) == 0 && getCharDataBloc(d->blocs[d->currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
         {
             dataBlocAdd = getIntDataBloc(d->blocs[d->currentDirectory], i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            printf("%s", d->blocs[dataBlocAdd]->data);
+            printf("%s", d->blocs[dataBlocAdd]->m_data);
         }
         else
         {
@@ -344,7 +344,7 @@ int addDirectoryDisk(disk_t* d,char* name)
 
                 } else if (i == strlen(name)) {
 
-                    addCharDataBloc(d->blocs[d->currentDirectory],_END_OF_STRING_);
+                    addCharDataBloc(d->blocs[d->currentDirectory],END_OF_STRING);
 
                 } else {
 
@@ -364,7 +364,7 @@ int addDirectoryDisk(disk_t* d,char* name)
 
                 } else if (i == strlen(name)) {
 
-                    addCharDataBloc(d->blocs[a],_END_OF_STRING_);
+                    addCharDataBloc(d->blocs[a],END_OF_STRING);
 
                 } else {
 
@@ -384,7 +384,7 @@ int addDirectoryDisk(disk_t* d,char* name)
 
                 } else if (i == strlen(name)) {
 
-                    addCharDataBloc(d->blocs[a],_END_OF_STRING_);
+                    addCharDataBloc(d->blocs[a],END_OF_STRING);
 
                 } else {
 
@@ -437,7 +437,7 @@ int addFileDisk(disk_t* d,char* name)
 
                 } else if (i == strlen(name)) {
 
-                    addCharDataBloc(d->blocs[d->currentDirectory],_END_OF_STRING_);
+                    addCharDataBloc(d->blocs[d->currentDirectory],END_OF_STRING);
 
                 } else {
 
@@ -669,7 +669,7 @@ void removeDirectoriesRecDisk(disk_t* d, bloc_t* b) {
         int j;
         int dir;
         char* name;
-        for (i = 0; i < b->size && i < b->currentPosition; i += _RECORDING_)
+        for (i = 0; i < b->m_size && i < b->m_currentPosition; i += _RECORDING_)
         {
             name = getDataBloc(b,i+_HEADER_SIZE_);
             if (getCharDataBloc(b, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
@@ -713,7 +713,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
             b = d->blocs[d->currentDirectory];
         if(tab == NULL)
             tab = "│  ";
-        for (i = 0; i < b->size && i < b->currentPosition; i += _RECORDING_)
+        for (i = 0; i < b->m_size && i < b->m_currentPosition; i += _RECORDING_)
         {
             name = getDataBloc(b,i+_HEADER_SIZE_);
             if (getCharDataBloc(b, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
@@ -728,7 +728,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                     else
                         printf("   ");
                 }
-                if(i >= b->size - _RECORDING_ || i >= b->currentPosition - _RECORDING_)
+                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
                     tab = "   ";
@@ -749,7 +749,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                     else
                         printf("   ");
                 }
-                if(i >= b->size - _RECORDING_ || i >= b->currentPosition - _RECORDING_)
+                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
                     tab = "   ";
@@ -768,7 +768,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                     else
                         printf("   ");
                 }
-                if(i >= b->size - _RECORDING_ || i >= b->currentPosition - _RECORDING_)
+                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
                     tab = "   ";
