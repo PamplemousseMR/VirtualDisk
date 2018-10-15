@@ -25,11 +25,11 @@ static const char _HEADER_FILE_ = 'f';
 
 typedef struct
 {
-	int nbBlocs;
-	int blocSize;
-	int currentDirectory;
-	int* bitmap;
-	bloc_t** blocs;
+    int m_nbBlocs;
+    int m_blocSize;
+    int m_currentDirectory;
+    int* m_bitmap;
+    bloc_t** m_blocs;
 } disk_t;
 
 disk_t* createDisk(int, int);

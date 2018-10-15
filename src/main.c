@@ -123,11 +123,17 @@ void prog()
             }
         }
         else if(cmd[0] == 't' && cmd[1] == 'r' && cmd[2] == 'e' && cmd[3] == 'e' && cmd[4] == '\n')
+        {
             displayTreeDisk(d,NULL,NULL,NULL,0);
+        }
         else if(cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p' && cmd[4] == '\n')
+        {
             printHelp();
+        }
         else if(cmd[0] == 's' && cmd[1] == 'h' && cmd[2] == 'o' && cmd[3] == 'w' && cmd[4] == '\n')
+        {
             displayDisk(d);
+        }
         else if(cmd[0] == 'v' && cmd[1] == 'i' && cmd[2] == 'm' && cmd[3] == ' ')
         {
             tempChar = atoChar(&cmd[4]);
@@ -158,9 +164,13 @@ void prog()
             free(tempChar);
         }
         else if (cmd[0] == 'p' && cmd[1]=='w' && cmd[2]=='d' && cmd[3] == '\n')
+        {
             pwdDisk(d);
+        }
         else if( ( cmd[0] != 'e' || cmd[1]!='x' || cmd[2]!='i' || cmd[3]!='t' ) && cmd[0] != '\n')
+        {
             printf("%s%c unknown command\n",name,ext);
+        }
     }
     destroyDisk(d);
 }
