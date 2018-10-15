@@ -90,7 +90,9 @@ void prog()
         }
         else if(cmd[0] == 'l' && cmd[1] == 'o' && cmd[2] == 'a' && cmd[3] == 'd' && cmd[4] == ' ')
         {
-            temp = createFromFileDisk(atoChar(&cmd[5]));
+            tempChar = atoChar(&cmd[5]);
+            temp = createFromFileDisk(tempChar);
+            free(tempChar);
             if(temp != NULL)
             {
                 destroyDisk(d);

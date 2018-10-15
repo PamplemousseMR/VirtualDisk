@@ -778,6 +778,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                     printf("├──");
                 printf("d %s\n",name);
             }
+            free(name);
         }
         si--;
         if(si == 0)

@@ -5,6 +5,7 @@ bloc_t* createBloc(int size, char* data) {
     bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
     res->size = size;
     res->data = (char*)malloc(sizeof(char) * res->size);
+    memset(res->data, '\0', res->size);
     res->currentPosition = 0;
     if (data != NULL) {
 
