@@ -16,7 +16,7 @@ bloc_t* createBloc(int size, char* data) {
         }
         else
         {
-            fprintf(stderr, "[createBloc] longueur de la chaine supérieur à la taille du bloc");
+            printf("[createBloc] longueur de la chaine supérieur à la taille du bloc\n");
         }
     }
     return res;
@@ -29,13 +29,13 @@ bloc_t* createFromFileBloc(int fd)
     int readRes = read(fd, &(res->m_size), sizeof(int));
     if(readRes == -1)
     {
-        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la taille");
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la taille\n");
         exit(EXIT_FAILURE);
     }
     readRes = read(fd, &(res->m_currentPosition), sizeof(int));
     if(readRes == -1)
     {
-        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante");
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante\n");
         exit(EXIT_FAILURE);
     }
 
@@ -44,7 +44,7 @@ bloc_t* createFromFileBloc(int fd)
     readRes = read(fd, res->m_data, sizeof(char) * res->m_size);
     if(readRes == -1)
     {
-        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante");
+        fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante\n");
         exit(EXIT_FAILURE);
     }
 
@@ -62,7 +62,7 @@ int destroyBloc(bloc_t* b)
     }
     else
     {
-        fprintf(stderr, "[destroyBloc] paramètre NULL");
+        fprintf(stderr, "[destroyBloc] paramètre NULL\n");
     }
     return 0;
 }
@@ -79,12 +79,15 @@ int addDataBloc(bloc_t* b, char* data)
                 b->m_currentPosition = b->m_currentPosition + strlen(data);
                 return 1;
             }
-            else fprintf(stderr, "[addDataBloc] longueur de la chaine supérieur à la taille du bloc");
+            else
+            {
+                printf("[addDataBloc] longueur de la chaine supérieur à la taille du bloc\n");
+            }
         }
     }
     else
     {
-        printf("[addDataBloc] paramètre NULL");
+        fprintf(stderr, "[addDataBloc] paramètre NULL\n");
     }
     return 0;
 }
@@ -105,12 +108,12 @@ int addCharDataBloc(bloc_t* b,char data)
         }
         else
         {
-            fprintf(stderr, "[addCharDataBloc] longueur de la chaine supérieur à la taille du bloc");
+            printf("[addCharDataBloc] longueur de la chaine supérieur à la taille du bloc\n");
         }
     }
     else
     {
-        printf("[addCharDataBloc] paramètre NULL");
+        fprintf(stderr, "[addCharDataBloc] paramètre NULL\n");
     }
     return 0;
 }
@@ -148,7 +151,7 @@ char* getDataBloc(bloc_t* b,int i)
     }
     else
     {
-        fprintf(stderr, "[getDataBloc] paramètre NULL");
+        fprintf(stderr, "[getDataBloc] paramètre NULL\n");
     }
 
     return 0;
@@ -167,7 +170,7 @@ char getCharDataBloc(bloc_t* b,int i)
     }
     else
     {
-        fprintf(stderr, "[getCharDataBloc] paramètre NULL");
+        fprintf(stderr, "[getCharDataBloc] paramètre NULL\n");
     }
 
     return 0;
@@ -200,7 +203,7 @@ int getIntDataBloc(bloc_t* b,int i)
     }
     else
     {
-        fprintf(stderr, "[getIntDataBloc] paramètre NULL");
+        fprintf(stderr, "[getIntDataBloc] paramètre NULL\n");
     }
 
     return 0;
@@ -216,7 +219,7 @@ int addIntDataBloc(bloc_t* b,int num)
         char* n = itoChar(num);
         if(strlen(n) > sizeof(int))
         {
-            fprintf(stderr, "[addIntDataBloc] valeur trop grande");
+            printf("[addIntDataBloc] valeur trop grande\n");
             return 0;
         }
         if(strlen(n) != sizeof(int))
@@ -236,14 +239,14 @@ int addIntDataBloc(bloc_t* b,int num)
             to[sizeof(int)] = '\0';
             if(addDataBloc(b,to) == 0)
             {
-                fprintf(stderr, "[addIntDataBloc] pas assez de place");
+                printf("[addIntDataBloc] pas assez de place\n");
                 return 0;
             }
             free(to);
         }
         else if(addDataBloc(b,n) == 0)
         {
-            fprintf(stderr, "[addIntDataBloc] pas assez de place");
+            printf("[addIntDataBloc] pas assez de place\n");
             return 0;
         }
         free(n);
@@ -264,7 +267,7 @@ void displayBloc(bloc_t* b)
     }
     else
     {
-        fprintf(stderr, "[displayBloc] paramètre NULL");
+        fprintf(stderr, "[displayBloc] paramètre NULL\n");
     }
 }
 
@@ -274,19 +277,19 @@ int saveBloc(bloc_t* b, int fd) {
     {
         if(write(fd, &(b->m_size), sizeof(int)) == -1)
         {
-            fprintf(stderr, "[saveBloc] Erreur write");
+            fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
         }
 
         if(write(fd, &(b->m_currentPosition), sizeof(int)) == -1)
         {
-            fprintf(stderr, "[saveBloc] Erreur write");
+            fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
         }
 
         if(write(fd, b->m_data, sizeof(char) * b->m_size) == -1)
         {
-            fprintf(stderr, "[saveBloc] Erreur write");
+            fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
         }
         return 1;
@@ -294,7 +297,7 @@ int saveBloc(bloc_t* b, int fd) {
     }
     else
     {
-        fprintf(stderr, "[saveBloc] paramètre NULL");
+        fprintf(stderr, "[saveBloc] paramètre NULL\n");
     }
     return 0;
 
@@ -308,7 +311,7 @@ int isFullBloc(bloc_t* b)
     }
     else
     {
-        fprintf(stderr, "[isFullBloc] paramètre NULL");
+        fprintf(stderr, "[isFullBloc] paramètre NULL\n");
     }
 
     return 0;
@@ -328,7 +331,7 @@ void emptyBloc(bloc_t* b)
     }
     else
     {
-        fprintf(stderr, "[emptyBloc] paramètre NULL");
+        fprintf(stderr, "[emptyBloc] paramètre NULL\n");
     }
 }
 
@@ -350,7 +353,7 @@ void removeBloc(bloc_t* b,int beg ,int end)
         }
         else
         {
-            fprintf(stderr, "[remove] borne incorecte");
+            printf("[remove] borne incorecte\n");
         }
     }
     else

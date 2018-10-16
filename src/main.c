@@ -47,7 +47,7 @@ void prog()
         printf("%s%c",name,ext);
         if(fgets(cmd, 128, stdin) == NULL)
         {
-            fprintf(stderr, "Erreur fgets");
+            fprintf(stderr, "Erreur fgets\n");
             exit(EXIT_FAILURE);
         }
         if(cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\n')
@@ -105,13 +105,13 @@ void prog()
             printf("\tTaille des blocks ? : ");
             if(fgets(blockSize, 128, stdin) == NULL)
             {
-                fprintf(stderr, "Erreur fgets");
+                fprintf(stderr, "Erreur fgets\n");
                 exit(EXIT_FAILURE);
             }
             printf("\tNombre de blocks ? : ");
             if(fgets(nbBloc, 128, stdin) == NULL)
             {
-                fprintf(stderr, "Erreur fgets");
+                fprintf(stderr, "Erreur fgets\n");
                 exit(EXIT_FAILURE);
             }
             temp = createDisk(atoi(blockSize) , atoi(nbBloc));
@@ -144,7 +144,7 @@ void prog()
                 free(tempChar2);
                 if(fgets(data, 4096, stdin) == NULL)
                 {
-                    fprintf(stderr, "Erreur fgets");
+                    fprintf(stderr, "Erreur fgets\n");
                     exit(EXIT_FAILURE);
                 }
                 tempChar2 = atoChar(&cmd[4]);

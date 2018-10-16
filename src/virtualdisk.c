@@ -8,7 +8,6 @@ disk_t* createDisk(int size, int nbBlock)
 {
     int* pi;
     int i;
-    /*bloc_t** ppb;*/
     char* name = ".";
     header h = _HEADER_DIRECTORY_;
     if (size >= _MIN_BLOC_SIZE_ && nbBlock >= _MIN_BLOC_NUMBER_)
@@ -16,7 +15,7 @@ disk_t* createDisk(int size, int nbBlock)
         disk_t* res;
         if(size % _RECORDING_ != 0)
         {
-            printf("[createDisk] la taille des blocks doit etre modulo %d",_RECORDING_);
+            printf("[createDisk] la taille des blocks doit etre modulo %d\n",_RECORDING_);
             return NULL;
         }
         res = (disk_t*)malloc(sizeof(disk_t));
@@ -32,10 +31,6 @@ disk_t* createDisk(int size, int nbBlock)
 
         res->m_blocs = (bloc_t**)malloc(sizeof(bloc_t*) * nbBlock);
 
-        /*for (ppb = res->m_blocs; ppb < res->m_blocs + nbBlock; ppb++)
-        {
-            (*ppb) = createBloc(size, "");
-        }*/
         for(i=0 ; i<nbBlock ; ++i)
         {
             res->m_blocs[i] = createBloc(size, "");
@@ -62,7 +57,7 @@ disk_t* createDisk(int size, int nbBlock)
     }
     else
     {
-        fprintf(stderr, "[createDisk] taille ou nombre de blocs inférieur au minimum requis");
+        printf("[createDisk] taille ou nombre de blocs inférieur au minimum requis\n");
     }
 
     return NULL;
@@ -79,28 +74,28 @@ disk_t* createFromFileDisk(char* path)
         disk_t* res = (disk_t*)malloc(sizeof(disk_t));
         if((fd = open(path, O_RDWR, S_IRUSR|S_IWUSR)) == -1)
         {
-            fprintf(stderr, "[createFromFileDisk] Erreur lors de l'ouverture du fichier");
+            fprintf(stderr, "[createFromFileDisk] Erreur lors de l'ouverture du fichier\n");
             return 0;
         }
 
         readRes = read(fd, &(res->m_nbBlocs), sizeof(int));
         if(readRes == -1)
         {
-            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture du nombre de blocs");
+            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture du nombre de blocs\n");
             exit(EXIT_FAILURE);
         }
 
         readRes = read(fd, &(res->m_blocSize), sizeof(int));
         if(readRes == -1)
         {
-            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture de la taille des blocs");
+            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture de la taille des blocs\n");
             exit(EXIT_FAILURE);
         }
 
         readRes = read(fd, &(res->m_currentDirectory), sizeof(int));
         if(readRes == -1)
         {
-            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture du pointeur courant");
+            fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture du pointeur courant\n");
             exit(EXIT_FAILURE);
         }
 
@@ -111,7 +106,7 @@ disk_t* createFromFileDisk(char* path)
             readRes = read(fd, pi, sizeof(int));
             if(readRes == -1)
             {
-                fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture de la bitmap");
+                fprintf(stderr, "[createFromFileDisk] Erreur lors de la lecture de la bitmap\n");
                 exit(EXIT_FAILURE);
             }
         }
@@ -127,7 +122,7 @@ disk_t* createFromFileDisk(char* path)
     }
     else
     {
-        fprintf(stderr, "[createFromFileDisk] paramètre NULL");
+        fprintf(stderr, "[createFromFileDisk] paramètre NULL\n");
     }
 
     return NULL;
@@ -150,7 +145,7 @@ int destroyDisk(disk_t* d)
     }
     else
     {
-        fprintf(stderr, "[detroyDisk] paramètre NULL");
+        fprintf(stderr, "[detroyDisk] paramètre NULL\n");
     }
     return 0;
 }
@@ -178,7 +173,7 @@ int displayDisk(disk_t* d)
     }
     else
     {
-        fprintf(stderr, "[displayDisk] paramètre NULL");
+        fprintf(stderr, "[displayDisk] paramètre NULL\n");
     }
     return 0;
 }
@@ -218,7 +213,7 @@ void pwdDisk(disk_t* d) {
             }
             else
             {
-                fprintf(stderr, "[pwdDisk] ancien répertoire courant invisible dans son répertoire parent");
+                printf("[pwdDisk] ancien répertoire courant invisible dans son répertoire parent\n");
             }
         }
         
@@ -227,7 +222,7 @@ void pwdDisk(disk_t* d) {
     }
     else
     {
-        fprintf(stderr, "[pwdDisk] paramètre NULL");
+        fprintf(stderr, "[pwdDisk] paramètre NULL\n");
     }
     
 }
@@ -261,13 +256,13 @@ void printFileContentDisk(disk_t* d, char* name) {
         }
         else
         {
-            fprintf(stderr, "[printFileContentDisk] Le fichier n'existe pas");
+            printf("[printFileContentDisk] Le fichier n'existe pas\n");
         }
         free(temp);
     }
     else
     {
-        fprintf(stderr, "[printFileContentDisk] paramètre NULL");
+        fprintf(stderr, "[printFileContentDisk] paramètre NULL\n");
     }
 }
 
@@ -280,25 +275,25 @@ int saveDisk(disk_t* d,char* path)
         bloc_t** ppb;
         if((fd = open(path, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR)) == -1)
         {
-            fprintf(stderr, "[saveDisk] Erreur lors de l'ouverture du fichier");
+            fprintf(stderr, "[saveDisk] Erreur lors de l'ouverture du fichier\n");
             return 0;
         }
 
         if(write(fd, &(d->m_nbBlocs), sizeof(int)) == -1)
         {
-            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du nombre de blocs");
+            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du nombre de blocs\n");
             exit(EXIT_FAILURE);
         }
 
         if(write(fd, &(d->m_blocSize), sizeof(int)) == -1)
         {
-            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture de la taille d'un bloc");
+            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture de la taille d'un bloc\n");
             exit(EXIT_FAILURE);
         }
 
         if(write(fd, &(d->m_currentDirectory), sizeof(int)) == -1)
         {
-            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du pointeur courant");
+            fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du pointeur courant\n");
             exit(EXIT_FAILURE);
         }
 
@@ -306,7 +301,7 @@ int saveDisk(disk_t* d,char* path)
         {
             if(write(fd, pi, sizeof(int)) == -1)
             {
-                fprintf(stderr, "[saveDisk] Erreur lors de l'écriture de la bitmap");
+                fprintf(stderr, "[saveDisk] Erreur lors de l'écriture de la bitmap\n");
                 exit(EXIT_FAILURE);
             }
         }
@@ -318,7 +313,7 @@ int saveDisk(disk_t* d,char* path)
     }
     else
     {
-        fprintf(stderr, "[saveDisk] paramètre NULL");
+        fprintf(stderr, "[saveDisk] paramètre NULL\n");
     }
     return 0;
 }
@@ -335,17 +330,17 @@ int addDirectoryDisk(disk_t* d,char* name)
             address a = findEmptyBloc(d);
             if(checkDirectory(d,name))
             {
-                fprintf(stderr, "[addDirectoryDisk] le repertoire existe deja");
+                printf("[addDirectoryDisk] le repertoire existe deja\n");
                 return 0;
             }
             if(isFullBloc(d->m_blocs[d->m_currentDirectory]))
             {
-                fprintf(stderr, "[addDirectoryDisk] le repertoire est plein");
+                printf("[addDirectoryDisk] le repertoire est plein\n");
                 return 0;
             }
             if(a == -1)
             {
-                fprintf(stderr, "[addDirectoryDisk] tout les blocks sont utilise");
+                printf("[addDirectoryDisk] tout les blocks sont utilise\n");
                 return 0;
             }
             addCharDataBloc(d->m_blocs[d->m_currentDirectory],h);
@@ -406,12 +401,12 @@ int addDirectoryDisk(disk_t* d,char* name)
         }
         else
         {
-            fprintf(stderr, "[addDirectoryDisk] nom trop long");
+            printf("[addDirectoryDisk] nom trop long\n");
         }
     }
     else
     {
-        fprintf(stderr, "[addDirectoryDisk] paramètre NULL");
+        fprintf(stderr, "[addDirectoryDisk] paramètre NULL\n");
     }
 
     return 0;
@@ -428,17 +423,17 @@ int addFileDisk(disk_t* d,char* name)
             address a = findEmptyBloc(d);
             if(checkFile(d,name))
             {
-                fprintf(stderr, "[addFileDisk] le fichier existe deja");
+                printf("[addFileDisk] le fichier existe deja\n");
                 return 0;
             }
             if(isFullBloc(d->m_blocs[d->m_currentDirectory]))
             {
-                fprintf(stderr, "[addFileDisk] le repertoire est plein");
+                printf("[addFileDisk] le repertoire est plein\n");
                 return 0;
             }
             if(a == -1)
             {
-                fprintf(stderr, "[addFileDisk] tout les blocks sont utilise");
+                printf("[addFileDisk] tout les blocks sont utilise\n");
                 return 0;
             }
             addCharDataBloc(d->m_blocs[d->m_currentDirectory],h);
@@ -461,8 +456,15 @@ int addFileDisk(disk_t* d,char* name)
             d->m_bitmap[a] = 1;
             return 1;
         }
-        else fprintf(stderr, "[addFileDisk] nom trop long");
-    } else fprintf(stderr, "[addFileDisk] paramètre NULL");
+        else
+        {
+            printf("[addFileDisk] nom trop long\n");
+        }
+    }
+    else
+    {
+        fprintf(stderr, "[addFileDisk] paramètre NULL\n");
+    }
 
     return 0;
 }
@@ -494,13 +496,13 @@ int moveToDirectory(disk_t* d,char* rep)
         }
         else
         {
-            fprintf(stderr, "[moveToDirectory] le repertoire n'existe pas");
+            printf("[moveToDirectory] le repertoire n'existe pas\n");
         }
         free(temp);
     }
     else
     {
-        fprintf(stderr, "[moveToDirectory] paramètre NULL");
+        fprintf(stderr, "[moveToDirectory] paramètre NULL\n");
     }
     return 0;
 }
@@ -533,7 +535,7 @@ int checkDirectory(disk_t* d,char* rep)
     }
     else
     {
-        fprintf(stderr, "[checkDirectory] paramètre NULL");
+        fprintf(stderr, "[checkDirectory] paramètre NULL\n");
     }
     return 0;
 }
@@ -568,7 +570,7 @@ int checkFile(disk_t* d,char* rep)
     }
     else
     {
-        fprintf(stderr, "[checkDirectory] paramètre NULL");
+        fprintf(stderr, "[checkDirectory] paramètre NULL\n");
     }
     return 0;
 }
@@ -589,7 +591,7 @@ int findEmptyBloc(disk_t* d) {
     }
     else
     {
-        fprintf(stderr, "[findEmptyBloc] paramètre NULL");
+        fprintf(stderr, "[findEmptyBloc] paramètre NULL\n");
     }
     return -1;
 }
@@ -620,7 +622,7 @@ int displayDirectoryDisk(disk_t* d)
     }
     else
     {
-        fprintf(stderr, "[displayDirectoryDisk] paramètre NULL");
+        fprintf(stderr, "[displayDirectoryDisk] paramètre NULL\n");
     }
     return -1;
 }
@@ -656,13 +658,13 @@ int removeFile(disk_t* d, char* name)
         }
         else
         {
-            fprintf(stderr, "[removeFile] le fichier n'existe pas");
+            printf("[removeFile] le fichier n'existe pas\n");
         }
         free(temp);
     }
     else
     {
-        fprintf(stderr, "[removeFile] paramètre NULL");
+        fprintf(stderr, "[removeFile] paramètre NULL\n");
     }
     return 0;
 }
@@ -705,12 +707,12 @@ void rmdirDisk(disk_t* d, char* name)
         }
         else
         {
-            fprintf(stderr, "[rmdirDisk] le fichier n'existe pas");
+            printf("[rmdirDisk] le fichier n'existe pas\n");
         }
     }
     else
     {
-        fprintf(stderr, "[rmdirDisk] paramètre NULL");
+        fprintf(stderr, "[rmdirDisk] paramètre NULL\n");
     }
 } 
 
@@ -748,7 +750,7 @@ void removeDirectoriesRecDisk(disk_t* d, bloc_t* b)
     }
     else
     {
-        fprintf(stderr, "[removeDirectoriesRec] paramètre NULL");
+        fprintf(stderr, "[removeDirectoriesRec] paramètre NULL\n");
     }
 }
 void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
@@ -866,7 +868,7 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
     }
     else
     {
-        fprintf(stderr, "[displayTreeDisk] paramètre NULL");
+        fprintf(stderr, "[displayTreeDisk] paramètre NULL\n");
     }
 }
 
@@ -899,12 +901,12 @@ void addToFileDisk(disk_t* d, char* name, char* data)
         }
         else
         {
-            fprintf(stderr, "[addToFileDisk] le fichier n'existe pas");
+            printf("[addToFileDisk] le fichier n'existe pas\n");
         }
         free(temp);
     }
     else
     {
-        fprintf(stderr, "[addToFileDisk] paramètre NULL");
+        fprintf(stderr, "[addToFileDisk] paramètre NULL\n");
     }
 }
