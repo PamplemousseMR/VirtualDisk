@@ -6,6 +6,6 @@
 #include <string.h>
 
 char* itoChar(int);
-char* atoChar(char data[]);
+char* atoChar(char[]);
 
 #endif

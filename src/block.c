@@ -1,18 +1,18 @@
 #include "block.h"
 
-bloc_t* createBloc(int size, char* data) {
-
+bloc_t* createBloc(int _size, char* _data)
+{
     bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
-    res->m_size = size;
+    res->m_size = _size;
     res->m_data = (char*)malloc(sizeof(char) * res->m_size);
     memset(res->m_data, '\0', res->m_size);
     res->m_currentPosition = 0;
-    if (data != NULL)
+    if (_data != NULL)
     {
-        if (strlen(data) <= res->m_size)
+        if (strlen(_data) <= res->m_size)
         {
-            strcpy(res->m_data, data);
-            res->m_currentPosition = strlen(data);
+            strcpy(res->m_data, _data);
+            res->m_currentPosition = strlen(_data);
         }
         else
         {
@@ -22,17 +22,17 @@ bloc_t* createBloc(int size, char* data) {
     return res;
 }
 
-bloc_t* createFromFileBloc(int fd)
+bloc_t* createFromFileBloc(int _fd)
 {
     bloc_t* res = (bloc_t*)malloc(sizeof(bloc_t));
 
-    int readRes = read(fd, &(res->m_size), sizeof(int));
+    int readRes = read(_fd, &(res->m_size), sizeof(int));
     if(readRes == -1)
     {
         fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la taille\n");
         exit(EXIT_FAILURE);
     }
-    readRes = read(fd, &(res->m_currentPosition), sizeof(int));
+    readRes = read(_fd, &(res->m_currentPosition), sizeof(int));
     if(readRes == -1)
     {
         fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante\n");
@@ -41,7 +41,7 @@ bloc_t* createFromFileBloc(int fd)
 
     res->m_data = (char*)malloc(sizeof(char) * res->m_size);
 
-    readRes = read(fd, res->m_data, sizeof(char) * res->m_size);
+    readRes = read(_fd, res->m_data, sizeof(char) * res->m_size);
     if(readRes == -1)
     {
         fprintf(stderr, "[createFromFileBloc] Erreur lors de la lecture de la position courante\n");
@@ -52,12 +52,12 @@ bloc_t* createFromFileBloc(int fd)
 
 }
 
-int destroyBloc(bloc_t* b)
+int destroyBloc(bloc_t* _bloc)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
-        free(b->m_data);
-        free(b);
+        free(_bloc->m_data);
+        free(_bloc);
         return 1;
     }
     else
@@ -67,16 +67,16 @@ int destroyBloc(bloc_t* b)
     return 0;
 }
 
-int addDataBloc(bloc_t* b, char* data) 
+int addDataBloc(bloc_t* _bloc, char* _data)
 {
-    if(b != NULL)
+    if(_bloc != NULL)
     {
-        if (data != NULL)
+        if (_data != NULL)
         {
-            if (strlen(data) <= b->m_size - b->m_currentPosition)
+            if (strlen(_data) <= _bloc->m_size - _bloc->m_currentPosition)
             {
-                strcpy(b->m_data + b->m_currentPosition, data);
-                b->m_currentPosition = b->m_currentPosition + strlen(data);
+                strcpy(_bloc->m_data + _bloc->m_currentPosition, _data);
+                _bloc->m_currentPosition = _bloc->m_currentPosition + strlen(_data);
                 return 1;
             }
             else
@@ -92,18 +92,18 @@ int addDataBloc(bloc_t* b, char* data)
     return 0;
 }
 
-int addCharDataBloc(bloc_t* b,char data)
+int addCharDataBloc(bloc_t* _bloc, char _data)
 {
-    if(b != NULL)
+    if(_bloc != NULL)
     {
-        if (1 <= b->m_size - b->m_currentPosition)
+        if (1 <= _bloc->m_size - _bloc->m_currentPosition)
         {
-            if(data == 0x0)
+            if(_data == 0x0)
             {
-                data = '0';
+                _data = '0';
             }
-            memcpy(b->m_data + b->m_currentPosition, &data, sizeof(data));
-            b->m_currentPosition++;
+            memcpy(_bloc->m_data + _bloc->m_currentPosition, &_data, sizeof(_data));
+            _bloc->m_currentPosition++;
             return 1;
         }
         else
@@ -118,19 +118,19 @@ int addCharDataBloc(bloc_t* b,char data)
     return 0;
 }
 
-char* getDataBloc(bloc_t* b,int i)
+char* getDataBloc(bloc_t* _bloc, int _i)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
         char c;
         char* res;
         int j;
         int taille = 0;
-        if(i>b->m_currentPosition)
+        if(_i>_bloc->m_currentPosition)
         {
             return NULL;
         }
-        while((c=b->m_data[i + taille]) != END_OF_STRING)
+        while((c=_bloc->m_data[_i + taille]) != END_OF_STRING)
         {
             ++taille;
         }
@@ -140,7 +140,7 @@ char* getDataBloc(bloc_t* b,int i)
             res[j] = '0';
         }
         taille = 0;
-        while((c = b->m_data[i + taille]) != END_OF_STRING)
+        while((c = _bloc->m_data[_i + taille]) != END_OF_STRING)
         {
             res[taille] = c;
             taille++;
@@ -157,15 +157,15 @@ char* getDataBloc(bloc_t* b,int i)
     return 0;
 }
 
-char getCharDataBloc(bloc_t* b,int i)
+char getCharDataBloc(bloc_t* _bloc, int _i)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
-        if(i>b->m_currentPosition)
+        if(_i>_bloc->m_currentPosition)
         {
             return '0';
         }
-        return b->m_data[i];
+        return _bloc->m_data[_i];
 
     }
     else
@@ -176,22 +176,22 @@ char getCharDataBloc(bloc_t* b,int i)
     return 0;
 }
 
-int getIntDataBloc(bloc_t* b,int i)
+int getIntDataBloc(bloc_t* _bloc, int _i)
 {
     int value;
-    if (b != NULL)
+    if (_bloc != NULL)
     {
         char c;
         char* res;
         int taille = 0;
-        if(i>b->m_currentPosition)
+        if(_i>_bloc->m_currentPosition)
         {
             return 0;
         }
         res = (char*)malloc(sizeof(char) * sizeof(int) + sizeof(char));
         while(taille != 4)
         {
-            c = b->m_data[i + taille];
+            c = _bloc->m_data[_i + taille];
             res[taille] = c;
             taille++;
         }
@@ -209,14 +209,14 @@ int getIntDataBloc(bloc_t* b,int i)
     return 0;
 }
 
-int addIntDataBloc(bloc_t* b,int num)
+int addIntDataBloc(bloc_t* _bloc, int _num)
 {
-    if(b != NULL)
+    if(_bloc != NULL)
     {
         char* to;
         int i;
         int j=0;
-        char* n = itoChar(num);
+        char* n = itoChar(_num);
         if(strlen(n) > sizeof(int))
         {
             printf("[addIntDataBloc] valeur trop grande\n");
@@ -237,14 +237,14 @@ int addIntDataBloc(bloc_t* b,int num)
                 }
             }
             to[sizeof(int)] = '\0';
-            if(addDataBloc(b,to) == 0)
+            if(addDataBloc(_bloc,to) == 0)
             {
                 printf("[addIntDataBloc] pas assez de place\n");
                 return 0;
             }
             free(to);
         }
-        else if(addDataBloc(b,n) == 0)
+        else if(addDataBloc(_bloc,n) == 0)
         {
             printf("[addIntDataBloc] pas assez de place\n");
             return 0;
@@ -259,11 +259,11 @@ int addIntDataBloc(bloc_t* b,int num)
     return 0;
 }
 
-void displayBloc(bloc_t* b) 
+void displayBloc(bloc_t* _bloc)
 {
-    if(b != NULL)
+    if(_bloc != NULL)
     {
-        printf("[bloc]\n\tsize : %d\n\tcurrent position : %d\n\tdata : %s\n",b->m_size,b->m_currentPosition,b->m_data);
+        printf("[bloc]\n\tsize : %d\n\tcurrent position : %d\n\tdata : %s\n",_bloc->m_size,_bloc->m_currentPosition,_bloc->m_data);
     }
     else
     {
@@ -271,23 +271,23 @@ void displayBloc(bloc_t* b)
     }
 }
 
-int saveBloc(bloc_t* b, int fd) {
-
-    if (b != NULL)
+int saveBloc(bloc_t* _bloc, int _fd)
+{
+    if (_bloc != NULL)
     {
-        if(write(fd, &(b->m_size), sizeof(int)) == -1)
+        if(write(_fd, &(_bloc->m_size), sizeof(int)) == -1)
         {
             fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
         }
 
-        if(write(fd, &(b->m_currentPosition), sizeof(int)) == -1)
+        if(write(_fd, &(_bloc->m_currentPosition), sizeof(int)) == -1)
         {
             fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
         }
 
-        if(write(fd, b->m_data, sizeof(char) * b->m_size) == -1)
+        if(write(_fd, _bloc->m_data, sizeof(char) * _bloc->m_size) == -1)
         {
             fprintf(stderr, "[saveBloc] Erreur write\n");
             exit(EXIT_FAILURE);
@@ -303,11 +303,11 @@ int saveBloc(bloc_t* b, int fd) {
 
 }
 
-int isFullBloc(bloc_t* b)
+int isFullBloc(bloc_t* _bloc)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
-        return b->m_currentPosition == b->m_size;
+        return _bloc->m_currentPosition == _bloc->m_size;
     }
     else
     {
@@ -318,16 +318,16 @@ int isFullBloc(bloc_t* b)
 
 }
 
-void emptyBloc(bloc_t* b)
+void emptyBloc(bloc_t* _bloc)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
         int i;
-        for(i=0 ; i<b->m_size ; i++)
+        for(i=0 ; i<_bloc->m_size ; i++)
         {
-            b->m_data[i] = '\0';
+            _bloc->m_data[i] = '\0';
         }
-        b->m_currentPosition = 0;
+        _bloc->m_currentPosition = 0;
     }
     else
     {
@@ -335,21 +335,21 @@ void emptyBloc(bloc_t* b)
     }
 }
 
-void removeBloc(bloc_t* b,int beg ,int end)
+void removeBloc(bloc_t* _bloc, int _beg, int _end)
 {
-    if (b != NULL)
+    if (_bloc != NULL)
     {
-        if(beg >= 0 && beg < end && beg <b->m_size && end<b->m_size)
+        if(_beg >= 0 && _beg < _end && _beg <_bloc->m_size && _end<_bloc->m_size)
         {
             char* pcs;
             char* pcd;
-            int diff = b->m_size - end;
-            b->m_currentPosition -= end-beg+1;
-            for(pcd = b->m_data + beg, pcs = b->m_data + end + 1; pcs < b->m_data + b->m_size ; pcd++, pcs++)
+            int diff = _bloc->m_size - _end;
+            _bloc->m_currentPosition -= _end-_beg+1;
+            for(pcd = _bloc->m_data + _beg, pcs = _bloc->m_data + _end + 1; pcs < _bloc->m_data + _bloc->m_size ; pcd++, pcs++)
             {
                 *pcd = *pcs;
             }
-            memset(b->m_data + beg + diff, 0, b->m_size-beg-diff);
+            memset(_bloc->m_data + _beg + diff, 0, _bloc->m_size-_beg-diff);
         }
         else
         {

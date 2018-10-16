@@ -10,7 +10,7 @@ The goal of this project is to implement a virtual hard drive disk.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-### compilation
+### Compilation
 
 Compile using the makefile : `make`.
 
@@ -19,7 +19,7 @@ Compile using the makefile : `make`.
 - clean : Clean previous compilation.
 ```
 
-### use
+### Use
 
 Start the disk : `./virtualDisk`.
 

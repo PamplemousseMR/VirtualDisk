@@ -4,36 +4,36 @@ static int checkDirectory(disk_t*,char*);
 static int findEmptyBloc(disk_t*);
 static void removeDirectoriesRecDisk(disk_t*, bloc_t*);
 
-disk_t* createDisk(int size, int nbBlock)
+disk_t* createDisk(int _size, int _nbBlock)
 {
     int* pi;
     int i;
     char* name = ".";
     header h = _HEADER_DIRECTORY_;
-    if (size >= _MIN_BLOC_SIZE_ && nbBlock >= _MIN_BLOC_NUMBER_)
+    if (_size >= _MIN_BLOC_SIZE_ && _nbBlock >= _MIN_BLOC_NUMBER_)
     {
         disk_t* res;
-        if(size % _RECORDING_ != 0)
+        if(_size % _RECORDING_ != 0)
         {
             printf("[createDisk] la taille des blocks doit etre modulo %d\n",_RECORDING_);
             return NULL;
         }
         res = (disk_t*)malloc(sizeof(disk_t));
-        res->m_nbBlocs = nbBlock;
-        res->m_blocSize = size;
+        res->m_nbBlocs = _nbBlock;
+        res->m_blocSize = _size;
         res->m_currentDirectory = 0;
-        res->m_bitmap = (int*)malloc(sizeof(int) * nbBlock);
-        for (pi = res->m_bitmap; pi < res->m_bitmap + nbBlock; pi++)
+        res->m_bitmap = (int*)malloc(sizeof(int) * _nbBlock);
+        for (pi = res->m_bitmap; pi < res->m_bitmap + _nbBlock; pi++)
         {
             *pi = 0;
         }
         res->m_bitmap[0] = 1;
 
-        res->m_blocs = (bloc_t**)malloc(sizeof(bloc_t*) * nbBlock);
+        res->m_blocs = (bloc_t**)malloc(sizeof(bloc_t*) * _nbBlock);
 
-        for(i=0 ; i<nbBlock ; ++i)
+        for(i=0 ; i<_nbBlock ; ++i)
         {
-            res->m_blocs[i] = createBloc(size, "");
+            res->m_blocs[i] = createBloc(_size, "");
         }
         addCharDataBloc(res->m_blocs[res->m_currentDirectory], h);
         for (i = 0; i < _NAME_SIZE_; i++)
@@ -63,16 +63,16 @@ disk_t* createDisk(int size, int nbBlock)
     return NULL;
 }
 
-disk_t* createFromFileDisk(char* path)
+disk_t* createFromFileDisk(char* _path)
 {
-    if (path != NULL)
+    if (_path != NULL)
     {
         int fd;
         int readRes;
         int* pi;
         bloc_t** ppb;
         disk_t* res = (disk_t*)malloc(sizeof(disk_t));
-        if((fd = open(path, O_RDWR, S_IRUSR|S_IWUSR)) == -1)
+        if((fd = open(_path, O_RDWR, S_IRUSR|S_IWUSR)) == -1)
         {
             fprintf(stderr, "[createFromFileDisk] Erreur lors de l'ouverture du fichier\n");
             return 0;
@@ -128,18 +128,18 @@ disk_t* createFromFileDisk(char* path)
     return NULL;
 }
 
-int destroyDisk(disk_t* d)
+int destroyDisk(disk_t* _disk)
 {
     bloc_t** ppb;
-    if (d != NULL)
+    if (_disk != NULL)
     {
-        for (ppb = d->m_blocs; ppb < d->m_blocs + d->m_nbBlocs; ppb++)
+        for (ppb = _disk->m_blocs; ppb < _disk->m_blocs + _disk->m_nbBlocs; ppb++)
         {
             destroyBloc(*ppb);
         }
-        free(d->m_blocs);
-        free(d->m_bitmap);
-        free(d);
+        free(_disk->m_blocs);
+        free(_disk->m_bitmap);
+        free(_disk);
         return 1;
 
     }
@@ -150,22 +150,22 @@ int destroyDisk(disk_t* d)
     return 0;
 }
 
-int displayDisk(disk_t* d)
+int displayDisk(disk_t* _disk)
 {
     int* pi;
     bloc_t** ppb;
-    if (d != NULL)
+    if (_disk != NULL)
     {
-        printf("[disk_t]\n\tnbBlocks : %d,\n\tblocSize : %d,\n\tcurrentDirectory : %d,\n\tbitmap : [", d->m_nbBlocs, d->m_blocSize, d->m_currentDirectory);
+        printf("[disk_t]\n\tnbBlocks : %d,\n\tblocSize : %d,\n\tcurrentDirectory : %d,\n\tbitmap : [", _disk->m_nbBlocs, _disk->m_blocSize, _disk->m_currentDirectory);
 
-        for (pi = d->m_bitmap; pi < d->m_bitmap + d->m_nbBlocs; pi++)
+        for (pi = _disk->m_bitmap; pi < _disk->m_bitmap + _disk->m_nbBlocs; pi++)
         {
             printf("%d,", *pi);
         }
 
         printf("],\n\tblocs : \n");
 
-        for (ppb = d->m_blocs; ppb < d->m_blocs + d->m_nbBlocs; ppb++)
+        for (ppb = _disk->m_blocs; ppb < _disk->m_blocs + _disk->m_nbBlocs; ppb++)
         {
             displayBloc(*ppb);
         }
@@ -178,9 +178,9 @@ int displayDisk(disk_t* d)
     return 0;
 }
 
-void pwdDisk(disk_t* d) {
-
-    if (d != NULL)
+void pwdDisk(disk_t* _disk)
+{
+    if (_disk != NULL)
     {
         /* Le répertoire .. est toujours celui du haut */
         char* nom;
@@ -191,13 +191,13 @@ void pwdDisk(disk_t* d) {
         int iCourant;
         int i; /* indice pour les parcours */
         nom = "";
-        courant = d->m_blocs[d->m_currentDirectory];
+        courant = _disk->m_blocs[_disk->m_currentDirectory];
         temp = getDataBloc(courant, _HEADER_SIZE_);
         while(strcmp(temp, ".") != 0)
         {
             iParent = getIntDataBloc(courant, _HEADER_SIZE_ + _NAME_SIZE_);
             iCourant = getIntDataBloc(courant, _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            parent = d->m_blocs[iParent];
+            parent = _disk->m_blocs[iParent];
             
             /* recherche du dossier qui correspond à l'ancient iCourant pour récupérer le nom */
             
@@ -231,9 +231,9 @@ void pwdDisk(disk_t* d) {
     
 }
 
-void printFileContentDisk(disk_t* d, char* name) {
-    
-    if (d != NULL && name != NULL)
+void printFileContentDisk(disk_t* _disk, char* _name)
+{
+    if (_disk != NULL && _name != NULL)
     {
         int i = 0;
         int ok = 1;
@@ -241,22 +241,22 @@ void printFileContentDisk(disk_t* d, char* name) {
         char* temp;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,name)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+            if(strcmp(temp,_name)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,name) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+        if(temp != NULL && strcmp(temp,_name) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
         {
-            dataBlocAdd = getIntDataBloc(d->m_blocs[d->m_currentDirectory], i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            printf("%s", d->m_blocs[dataBlocAdd]->m_data);
+            dataBlocAdd = getIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory], i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
+            printf("%s", _disk->m_blocs[dataBlocAdd]->m_data);
         }
         else
         {
@@ -270,38 +270,38 @@ void printFileContentDisk(disk_t* d, char* name) {
     }
 }
 
-int saveDisk(disk_t* d,char* path)
+int saveDisk(disk_t* _disk, char* _path)
 {
-    if (d != NULL && path != NULL)
+    if (_disk != NULL && _path != NULL)
     {
         int fd;
         int* pi;
         bloc_t** ppb;
-        if((fd = open(path, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR)) == -1)
+        if((fd = open(_path, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR)) == -1)
         {
             fprintf(stderr, "[saveDisk] Erreur lors de l'ouverture du fichier\n");
             return 0;
         }
 
-        if(write(fd, &(d->m_nbBlocs), sizeof(int)) == -1)
+        if(write(fd, &(_disk->m_nbBlocs), sizeof(int)) == -1)
         {
             fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du nombre de blocs\n");
             exit(EXIT_FAILURE);
         }
 
-        if(write(fd, &(d->m_blocSize), sizeof(int)) == -1)
+        if(write(fd, &(_disk->m_blocSize), sizeof(int)) == -1)
         {
             fprintf(stderr, "[saveDisk] Erreur lors de l'écriture de la taille d'un bloc\n");
             exit(EXIT_FAILURE);
         }
 
-        if(write(fd, &(d->m_currentDirectory), sizeof(int)) == -1)
+        if(write(fd, &(_disk->m_currentDirectory), sizeof(int)) == -1)
         {
             fprintf(stderr, "[saveDisk] Erreur lors de l'écriture du pointeur courant\n");
             exit(EXIT_FAILURE);
         }
 
-        for (pi = d->m_bitmap; pi < d->m_bitmap + d->m_nbBlocs; pi++)
+        for (pi = _disk->m_bitmap; pi < _disk->m_bitmap + _disk->m_nbBlocs; pi++)
         {
             if(write(fd, pi, sizeof(int)) == -1)
             {
@@ -309,7 +309,7 @@ int saveDisk(disk_t* d,char* path)
                 exit(EXIT_FAILURE);
             }
         }
-        for (ppb = d->m_blocs; ppb < d->m_blocs + d->m_nbBlocs; ppb++)
+        for (ppb = _disk->m_blocs; ppb < _disk->m_blocs + _disk->m_nbBlocs; ppb++)
         {
             saveBloc(*ppb, fd);
         }
@@ -322,22 +322,22 @@ int saveDisk(disk_t* d,char* path)
     return 0;
 }
 
-int addDirectoryDisk(disk_t* d,char* name)
+int addDirectoryDisk(disk_t* _disk, char* _name)
 {
 
-    if (d != NULL && name != NULL && strlen(name) != 0)
+    if (_disk != NULL && _name != NULL && strlen(_name) != 0)
     {
-        if(strlen(name)<=sizeof(filename)-sizeof(char))
+        if(strlen(_name)<=sizeof(filename)-sizeof(char))
         {
             int i;
             header h = _HEADER_DIRECTORY_;
-            address a = findEmptyBloc(d);
-            if(checkDirectory(d,name))
+            address a = findEmptyBloc(_disk);
+            if(checkDirectory(_disk,_name))
             {
                 printf("[addDirectoryDisk] le repertoire existe deja\n");
                 return 0;
             }
-            if(isFullBloc(d->m_blocs[d->m_currentDirectory]))
+            if(isFullBloc(_disk->m_blocs[_disk->m_currentDirectory]))
             {
                 printf("[addDirectoryDisk] le repertoire est plein\n");
                 return 0;
@@ -347,60 +347,60 @@ int addDirectoryDisk(disk_t* d,char* name)
                 printf("[addDirectoryDisk] tout les blocks sont utilise\n");
                 return 0;
             }
-            addCharDataBloc(d->m_blocs[d->m_currentDirectory],h);
+            addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],h);
             for (i = 0; i < _NAME_SIZE_; i++)
             {
-                if (i < strlen(name))
+                if (i < strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory], name[i]);
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory], _name[i]);
                 }
-                else if (i == strlen(name))
+                else if (i == strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory],END_OF_STRING);
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],END_OF_STRING);
                 }
                 else
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory],'0');
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],'0');
                 }
             }
-            addIntDataBloc(d->m_blocs[d->m_currentDirectory],a);
-            addCharDataBloc(d->m_blocs[a],h);
-            name = "..";
+            addIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory],a);
+            addCharDataBloc(_disk->m_blocs[a],h);
+            _name = "..";
             for (i = 0; i < _NAME_SIZE_; i++)
             {
-                if (i < strlen(name))
+                if (i < strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[a], name[i]);
+                    addCharDataBloc(_disk->m_blocs[a], _name[i]);
                 }
-                else if (i == strlen(name))
+                else if (i == strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[a],END_OF_STRING);
+                    addCharDataBloc(_disk->m_blocs[a],END_OF_STRING);
                 }
                 else
                 {
-                    addCharDataBloc(d->m_blocs[a],'0');
+                    addCharDataBloc(_disk->m_blocs[a],'0');
                 }
             }
-            addIntDataBloc(d->m_blocs[a],d->m_currentDirectory);
-            addCharDataBloc(d->m_blocs[a],h);
-            name = ".";
+            addIntDataBloc(_disk->m_blocs[a],_disk->m_currentDirectory);
+            addCharDataBloc(_disk->m_blocs[a],h);
+            _name = ".";
             for (i = 0; i < _NAME_SIZE_; i++)
             {
-                if (i < strlen(name))
+                if (i < strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[a], name[i]);
+                    addCharDataBloc(_disk->m_blocs[a], _name[i]);
                 }
-                else if (i == strlen(name))
+                else if (i == strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[a],END_OF_STRING);
+                    addCharDataBloc(_disk->m_blocs[a],END_OF_STRING);
                 }
                 else
                 {
-                    addCharDataBloc(d->m_blocs[a],'0');
+                    addCharDataBloc(_disk->m_blocs[a],'0');
                 }
             }
-            addIntDataBloc(d->m_blocs[a],a);
-            d->m_bitmap[a] = 1;
+            addIntDataBloc(_disk->m_blocs[a],a);
+            _disk->m_bitmap[a] = 1;
             return 1;
         }
         else
@@ -416,21 +416,21 @@ int addDirectoryDisk(disk_t* d,char* name)
     return 0;
 }
 
-int addFileDisk(disk_t* d,char* name)
+int addFileDisk(disk_t* _disk, char* _name)
 {
-    if (d != NULL && name != NULL && strlen(name) != 0)
+    if (_disk != NULL && _name != NULL && strlen(_name) != 0)
     {
-        if(strlen(name)<=sizeof(filename)-sizeof(char))
+        if(strlen(_name)<=sizeof(filename)-sizeof(char))
         {
             int i;
             header h = _HEADER_FILE_;
-            address a = findEmptyBloc(d);
-            if(checkFile(d,name))
+            address a = findEmptyBloc(_disk);
+            if(checkFile(_disk,_name))
             {
                 printf("[addFileDisk] le fichier existe deja\n");
                 return 0;
             }
-            if(isFullBloc(d->m_blocs[d->m_currentDirectory]))
+            if(isFullBloc(_disk->m_blocs[_disk->m_currentDirectory]))
             {
                 printf("[addFileDisk] le repertoire est plein\n");
                 return 0;
@@ -440,24 +440,24 @@ int addFileDisk(disk_t* d,char* name)
                 printf("[addFileDisk] tout les blocks sont utilise\n");
                 return 0;
             }
-            addCharDataBloc(d->m_blocs[d->m_currentDirectory],h);
+            addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],h);
             for (i = 0; i < _NAME_SIZE_; i++)
             {
-                if (i < strlen(name))
+                if (i < strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory], name[i]);
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory], _name[i]);
                 }
-                else if (i == strlen(name))
+                else if (i == strlen(_name))
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory],END_OF_STRING);
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],END_OF_STRING);
                 }
                 else
                 {
-                    addCharDataBloc(d->m_blocs[d->m_currentDirectory],'0');
+                    addCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],'0');
                 }
             }
-            addIntDataBloc(d->m_blocs[d->m_currentDirectory],a);
-            d->m_bitmap[a] = 1;
+            addIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory],a);
+            _disk->m_bitmap[a] = 1;
             return 1;
         }
         else
@@ -473,30 +473,30 @@ int addFileDisk(disk_t* d,char* name)
     return 0;
 }
 
-int moveToDirectory(disk_t* d,char* rep)
+int moveToDirectory(disk_t* _disk, char* _rep)
 {
-    if (d != NULL || rep == NULL)
+    if (_disk != NULL || _rep == NULL)
     {
         int i = 0;
         int ok = 1;
         char* temp;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,rep)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
+            if(strcmp(temp,_rep)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,rep) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
+        if(temp != NULL && strcmp(temp,_rep) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
         {
-            d->m_currentDirectory = getIntDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_ + (_HEADER_SIZE_+_NAME_SIZE_));
+            _disk->m_currentDirectory = getIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_ + (_HEADER_SIZE_+_NAME_SIZE_));
         }
         else
         {
@@ -511,28 +511,28 @@ int moveToDirectory(disk_t* d,char* rep)
     return 0;
 }
 
-int checkDirectory(disk_t* d,char* rep)
+int checkDirectory(disk_t* _disk, char* _rep)
 {
-    if (d != NULL || rep == NULL)
+    if (_disk != NULL || _rep == NULL)
     {
         int i = 0;
         int ok = 1;
         char* temp;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,rep)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
+            if(strcmp(temp,_rep)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,rep) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
+        if(temp != NULL && strcmp(temp,_rep) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
         {
             free(temp);
             return 1;
@@ -545,28 +545,28 @@ int checkDirectory(disk_t* d,char* rep)
     return 0;
 }
 
-int checkFile(disk_t* d,char* rep)
+int checkFile(disk_t* _disk, char* _rep)
 {
-    if (d != NULL || rep == NULL)
+    if (_disk != NULL || _rep == NULL)
     {
         int i = 0;
         int ok = 1;
         char* temp;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,rep)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+            if(strcmp(temp,_rep)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,rep) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+        if(temp != NULL && strcmp(temp,_rep) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
         {
             free(temp);
             return 1;
@@ -580,14 +580,14 @@ int checkFile(disk_t* d,char* rep)
     return 0;
 }
 
-int findEmptyBloc(disk_t* d) {
-
-    if (d != NULL)
+int findEmptyBloc(disk_t* _disk)
+{
+    if (_disk != NULL)
     {
         int i;
-        for (i = 0; i < d->m_nbBlocs; i++)
+        for (i = 0; i < _disk->m_nbBlocs; i++)
         {
-            if (d->m_bitmap[i] == 0)
+            if (_disk->m_bitmap[i] == 0)
             {
                 return i;
             }
@@ -601,17 +601,17 @@ int findEmptyBloc(disk_t* d) {
     return -1;
 }
 
-int displayDirectoryDisk(disk_t* d)
+int displayDirectoryDisk(disk_t* _disk)
 {
-    if (d != NULL)
+    if (_disk != NULL)
     {
         char c;
         char* temp;
         int i=0;
-        while(i<d->m_blocSize/_RECORDING_)
+        while(i<_disk->m_blocSize/_RECORDING_)
         {
-            c = getCharDataBloc(d->m_blocs[d->m_currentDirectory] , i*_RECORDING_);
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            c = getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             i++;
             if(temp != NULL)
             {
@@ -632,9 +632,9 @@ int displayDirectoryDisk(disk_t* d)
     return -1;
 }
 
-int removeFile(disk_t* d, char* name)
+int removeFile(disk_t* _disk, char* _name)
 {
-    if (d != NULL)
+    if (_disk != NULL)
     {
         int i = 0;
         int ok = 1;
@@ -642,24 +642,24 @@ int removeFile(disk_t* d, char* name)
         int dir;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,name)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+            if(strcmp(temp,_name)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,name) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+        if(temp != NULL && strcmp(temp,_name) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
         {
-            dir = getIntDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            emptyBloc(d->m_blocs[dir]);
-            removeBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_ ,i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
-            d->m_bitmap[dir] = 0;
+            dir = getIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
+            emptyBloc(_disk->m_blocs[dir]);
+            removeBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_ ,i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
+            _disk->m_bitmap[dir] = 0;
         }
         else
         {
@@ -674,15 +674,15 @@ int removeFile(disk_t* d, char* name)
     return 0;
 }
 
-void rmdirDisk(disk_t* d, char* name)
+void rmdirDisk(disk_t* _disk, char* _name)
 {
-    if (d != NULL && name != NULL)
+    if (_disk != NULL && _name != NULL)
     {
         int i = 0;
         int j;
         int ok = 1;
         char* temp;
-        bloc_t* b = d->m_blocs[d->m_currentDirectory];
+        bloc_t* b = _disk->m_blocs[_disk->m_currentDirectory];
 
         while (ok)
         {
@@ -692,7 +692,7 @@ void rmdirDisk(disk_t* d, char* name)
             {
                 break;
             }
-            if(strcmp(temp, name) == 0 && getCharDataBloc(b, i * _RECORDING_) == _HEADER_DIRECTORY_)
+            if(strcmp(temp, _name) == 0 && getCharDataBloc(b, i * _RECORDING_) == _HEADER_DIRECTORY_)
             {
                 break;
             }
@@ -700,15 +700,15 @@ void rmdirDisk(disk_t* d, char* name)
             free(temp);
         }
 
-        if(temp != NULL && strcmp(temp, name) == 0 && getCharDataBloc(b, i * _RECORDING_) == _HEADER_DIRECTORY_)
+        if(temp != NULL && strcmp(temp, _name) == 0 && getCharDataBloc(b, i * _RECORDING_) == _HEADER_DIRECTORY_)
         {
             int idBlock = getIntDataBloc(b, i * _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            bloc_t* b = d->m_blocs[idBlock];
-            j = d->m_currentDirectory;
-            d->m_currentDirectory = idBlock;
-            removeDirectoriesRecDisk(d, b);
-            d->m_currentDirectory = j;
-            removeBloc(d->m_blocs[d->m_currentDirectory], i * _RECORDING_,  i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
+            bloc_t* b = _disk->m_blocs[idBlock];
+            j = _disk->m_currentDirectory;
+            _disk->m_currentDirectory = idBlock;
+            removeDirectoriesRecDisk(_disk, b);
+            _disk->m_currentDirectory = j;
+            removeBloc(_disk->m_blocs[_disk->m_currentDirectory], i * _RECORDING_,  i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
         }
         else
         {
@@ -721,77 +721,77 @@ void rmdirDisk(disk_t* d, char* name)
     }
 } 
 
-void removeDirectoriesRecDisk(disk_t* d, bloc_t* b)
+void removeDirectoriesRecDisk(disk_t* _disk, bloc_t* _bloc)
 {
-    if (d != NULL && b != NULL)
+    if (_disk != NULL && _bloc != NULL)
     {
         int newId;
         int i;
         int j;
         int dir;
         char* name;
-        for (i = 0; i < b->m_size && i < b->m_currentPosition; i += _RECORDING_)
+        for (i = 0; i < _bloc->m_size && i < _bloc->m_currentPosition; i += _RECORDING_)
         {
-            name = getDataBloc(b,i+_HEADER_SIZE_);
-            if (getCharDataBloc(b, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
+            name = getDataBloc(_bloc,i+_HEADER_SIZE_);
+            if (getCharDataBloc(_bloc, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
             {
-                newId = getIntDataBloc(b, i + _HEADER_SIZE_ + _NAME_SIZE_);
-                j = d->m_currentDirectory;
-                d->m_currentDirectory = newId;
-                removeDirectoriesRecDisk(d , d->m_blocs[newId]);
-                d->m_currentDirectory = j;
+                newId = getIntDataBloc(_bloc, i + _HEADER_SIZE_ + _NAME_SIZE_);
+                j = _disk->m_currentDirectory;
+                _disk->m_currentDirectory = newId;
+                removeDirectoriesRecDisk(_disk , _disk->m_blocs[newId]);
+                _disk->m_currentDirectory = j;
             }
-            else if (getCharDataBloc(b, i) == _HEADER_FILE_)
+            else if (getCharDataBloc(_bloc, i) == _HEADER_FILE_)
             {
-                dir = getIntDataBloc(b,i + _HEADER_SIZE_ + _NAME_SIZE_);
-                emptyBloc(d->m_blocs[dir]);
-                removeBloc(d->m_blocs[d->m_currentDirectory],i ,i + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
+                dir = getIntDataBloc(_bloc,i + _HEADER_SIZE_ + _NAME_SIZE_);
+                emptyBloc(_disk->m_blocs[dir]);
+                removeBloc(_disk->m_blocs[_disk->m_currentDirectory],i ,i + _HEADER_SIZE_ + _NAME_SIZE_ + _ADDRESS_SIZE_-1);
                 i -= _RECORDING_;
-                d->m_bitmap[dir] = 0;
+                _disk->m_bitmap[dir] = 0;
             }
         }
-        emptyBloc(d->m_blocs[d->m_currentDirectory]);
-        d->m_bitmap[d->m_currentDirectory] = 0;
+        emptyBloc(_disk->m_blocs[_disk->m_currentDirectory]);
+        _disk->m_bitmap[_disk->m_currentDirectory] = 0;
     }
     else
     {
         fprintf(stderr, "[removeDirectoriesRec] paramètre NULL\n");
     }
 }
-void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
+void displayTreeDisk(disk_t* _disk, bloc_t* _bloc, char* _tab, int* _map, int _si)
 {
-    if (d != NULL)
+    if (_disk != NULL)
     {
         int newId;
         int i;
         int j;
         int k;
         char* name;
-        if(map == NULL)
+        if(_map == NULL)
         {
-            map = (int*)malloc(sizeof(int) * d->m_nbBlocs);
-            for(i=0 ; i<d->m_nbBlocs ; i++)
-                map[i] = 1;
+            _map = (int*)malloc(sizeof(int) * _disk->m_nbBlocs);
+            for(i=0 ; i<_disk->m_nbBlocs ; i++)
+                _map[i] = 1;
         }
-        if(b == NULL)
+        if(_bloc == NULL)
         {
-            b = d->m_blocs[d->m_currentDirectory];
+            _bloc = _disk->m_blocs[_disk->m_currentDirectory];
         }
-        if(tab == NULL)
+        if(_tab == NULL)
         {
-            tab = "│  ";
+            _tab = "│  ";
         }
-        for (i = 0; i < b->m_size && i < b->m_currentPosition; i += _RECORDING_)
+        for (i = 0; i < _bloc->m_size && i < _bloc->m_currentPosition; i += _RECORDING_)
         {
-            name = getDataBloc(b,i+_HEADER_SIZE_);
-            if (getCharDataBloc(b, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
+            name = getDataBloc(_bloc,i+_HEADER_SIZE_);
+            if (getCharDataBloc(_bloc, i) == _HEADER_DIRECTORY_ && strcmp(name,"..") != 0 && strcmp(name,".") != 0)
             {
-                newId = getIntDataBloc(b, i + _HEADER_SIZE_ + _NAME_SIZE_);
-                j = d->m_currentDirectory;
-                d->m_currentDirectory = newId;
-                for(k=0 ; k<=si-1; k++)
+                newId = getIntDataBloc(_bloc, i + _HEADER_SIZE_ + _NAME_SIZE_);
+                j = _disk->m_currentDirectory;
+                _disk->m_currentDirectory = newId;
+                for(k=0 ; k<=_si-1; k++)
                 {
-                    if(map[k] == 1)
+                    if(_map[k] == 1)
                     {
                         printf("│  ");
                     }
@@ -800,25 +800,25 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                         printf("   ");
                     }
                 }
-                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
+                if(i >= _bloc->m_size - _RECORDING_ || i >= _bloc->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
-                    tab = "   ";
-                    map[si] = 0;
+                    _tab = "   ";
+                    _map[_si] = 0;
                 }
                 else
                 {
                     printf("├──");
                 }
                 printf("d %s\n",name);
-                displayTreeDisk(d , d->m_blocs[newId], tab,map,si+1);
-                d->m_currentDirectory = j;
+                displayTreeDisk(_disk , _disk->m_blocs[newId], _tab,_map,_si+1);
+                _disk->m_currentDirectory = j;
             }
-            else if (getCharDataBloc(b, i) == _HEADER_FILE_)
+            else if (getCharDataBloc(_bloc, i) == _HEADER_FILE_)
             {
-                for(k=0 ; k<=si-1; k++)
+                for(k=0 ; k<=_si-1; k++)
                 {
-                    if(map[k] == 1)
+                    if(_map[k] == 1)
                     {
                         printf("│  ");
                     }
@@ -827,11 +827,11 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                         printf("   ");
                     }
                 }
-                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
+                if(i >= _bloc->m_size - _RECORDING_ || i >= _bloc->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
-                    tab = "   ";
-                    map[si] = 0;
+                    _tab = "   ";
+                    _map[_si] = 0;
                 }
                 else
                 {
@@ -841,9 +841,9 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
             }
             else
             {
-                for(k=0 ; k<=si-1; k++)
+                for(k=0 ; k<=_si-1; k++)
                 {
-                    if(map[k] == 1)
+                    if(_map[k] == 1)
                     {
                         printf("│  ");
                     }
@@ -852,11 +852,11 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
                         printf("   ");
                     }
                 }
-                if(i >= b->m_size - _RECORDING_ || i >= b->m_currentPosition - _RECORDING_)
+                if(i >= _bloc->m_size - _RECORDING_ || i >= _bloc->m_currentPosition - _RECORDING_)
                 {
                     printf("└──");
-                    tab = "   ";
-                    map[si] = 0;
+                    _tab = "   ";
+                    _map[_si] = 0;
                 }
                 else
                 {
@@ -866,9 +866,9 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
             }
             free(name);
         }
-        if(si == 0)
+        if(_si == 0)
         {
-            free(map);
+            free(_map);
         }
     }
     else
@@ -877,9 +877,9 @@ void displayTreeDisk(disk_t* d,bloc_t* b,char* tab,int* map,int si)
     }
 }
 
-void addToFileDisk(disk_t* d, char* name, char* data)
+void addToFileDisk(disk_t* _disk, char* _name, char* _data)
 {
-    if (d != NULL)
+    if (_disk != NULL)
     {
         int i = 0;
         int ok = 1;
@@ -887,22 +887,22 @@ void addToFileDisk(disk_t* d, char* name, char* data)
         int dir;
         while(ok)
         {
-            temp = getDataBloc(d->m_blocs[d->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
+            temp = getDataBloc(_disk->m_blocs[_disk->m_currentDirectory] , _HEADER_SIZE_ + i*_RECORDING_);
             if(temp == NULL)
             {
                 break;
             }
-            if(strcmp(temp,name)==0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+            if(strcmp(temp,_name)==0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
             {
                 break;
             }
             i++;
             free(temp);
         }
-        if(temp != NULL && strcmp(temp,name) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
+        if(temp != NULL && strcmp(temp,_name) == 0 && getCharDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_) == _HEADER_FILE_)
         {
-            dir = getIntDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
-            addDataBloc(d->m_blocs[dir],data);
+            dir = getIntDataBloc(_disk->m_blocs[_disk->m_currentDirectory],i*_RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
+            addDataBloc(_disk->m_blocs[dir],_data);
         }
         else
         {
