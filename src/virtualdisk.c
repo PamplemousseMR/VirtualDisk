@@ -184,6 +184,7 @@ void pwdDisk(disk_t* d) {
     {
         /* Le répertoire .. est toujours celui du haut */
         char* nom;
+        char* temp;
         bloc_t* courant;
         bloc_t* parent;
         int iParent;
@@ -191,8 +192,8 @@ void pwdDisk(disk_t* d) {
         int i; /* indice pour les parcours */
         nom = "";
         courant = d->m_blocs[d->m_currentDirectory];
-        
-        while (strcmp(getDataBloc(courant, _HEADER_SIZE_), ".") != 0)
+        temp = getDataBloc(courant, _HEADER_SIZE_);
+        while(strcmp(temp, ".") != 0)
         {
             iParent = getIntDataBloc(courant, _HEADER_SIZE_ + _NAME_SIZE_);
             iCourant = getIntDataBloc(courant, _RECORDING_ + _HEADER_SIZE_ + _NAME_SIZE_);
@@ -215,8 +216,11 @@ void pwdDisk(disk_t* d) {
             {
                 printf("[pwdDisk] ancien répertoire courant invisible dans son répertoire parent\n");
             }
+            free(temp);
+            temp = getDataBloc(courant, _HEADER_SIZE_);
         }
-        
+        free(temp);
+
         printf("%s\n",nom);
         
     }
@@ -530,6 +534,7 @@ int checkDirectory(disk_t* d,char* rep)
         }
         if(temp != NULL && strcmp(temp,rep) == 0 && getCharDataBloc(d->m_blocs[d->m_currentDirectory],i*_RECORDING_) == _HEADER_DIRECTORY_)
         {
+            free(temp);
             return 1;
         }
     }
