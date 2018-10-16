@@ -21,7 +21,7 @@ Compile using the makefile : `make`.
 
 ### use
 
-Start the disk : `./disk`.
+Start the disk : `./virtualDisk`.
 
 ## Authors
 

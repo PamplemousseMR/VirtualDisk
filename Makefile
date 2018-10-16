@@ -1,5 +1,5 @@
-OUTDIR = OFiles/
-EXEC = disk
+OUTDIR = virtualDiskOFiles/
+EXEC = virtualDisk
 
 CC = gcc
 CCFLAGS_STD = -Werror -Wall -O3 -pedantic
@@ -7,16 +7,16 @@ CCFLAGS = $(CC) $(CCFLAGS_STD) -ansi -o
 CCFLAGS_MAIN = $(CC) $(CCFLAGS_STD) -o
 
 all : 
-	make disk
+	make virtualDisk
 
 OBJETS = $(OUTDIR)main.o $(OUTDIR)virtualdisk.o $(OUTDIR)block.o $(OUTDIR)tools.o
 
-disk : disk_directory disk_compile
+virtualDisk : virtualDisk_directory virtualDisk_compile
 
-disk_directory :
+virtualDisk_directory :
 	mkdir -p $(OUTDIR)
 
-disk_compile : $(OBJETS)
+virtualDisk_compile : $(OBJETS)
 	$(CCFLAGS_MAIN) $(EXEC) $(OBJETS)
 
 $(OUTDIR)main.o : src/main.c src/virtualdisk.h
