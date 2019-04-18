@@ -1,7 +1,6 @@
 OUTDIR = virtualDiskOFiles/
 EXEC = virtualDisk
 
-CC = gcc
 CCFLAGS_STD = -Werror -Wall -O3 -pedantic
 CCFLAGS = $(CC) $(CCFLAGS_STD) -ansi -o
 CCFLAGS_MAIN = $(CC) $(CCFLAGS_STD) -o
