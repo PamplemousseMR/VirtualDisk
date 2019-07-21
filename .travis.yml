@@ -80,6 +80,7 @@ matrix:
     #==============================
     
     - os: linux
+      dist: xenial
       compiler: gcc-4.9
       addons:
         apt:
@@ -90,6 +91,7 @@ matrix:
       env: MATRIX_EVAL="CC=gcc-4.9"
 
     - os: linux
+      dist: xenial
       compiler: gcc-5
       addons:
         apt:
@@ -100,6 +102,7 @@ matrix:
       env: MATRIX_EVAL="CC=gcc-5"
 
     - os: linux
+      dist: xenial
       compiler: gcc-6
       addons:
         apt:
@@ -110,6 +113,7 @@ matrix:
       env: MATRIX_EVAL="CC=gcc-6"
 
     - os: linux
+      dist: xenial
       compiler: gcc-7
       addons:
         apt:
@@ -120,6 +124,7 @@ matrix:
       env: MATRIX_EVAL="CC=gcc-7"
 
     - os: linux
+      dist: xenial
       compiler: gcc-8
       addons:
         apt:
@@ -136,6 +141,7 @@ matrix:
     #==============================
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -147,6 +153,7 @@ matrix:
         - MATRIX_EVAL="CC=clang-3.6"
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -158,6 +165,7 @@ matrix:
         - MATRIX_EVAL="CC=clang-3.7"
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
@@ -169,26 +177,29 @@ matrix:
         - MATRIX_EVAL="CC=clang-3.8"
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-3.9
+            - llvm-toolchain-xenial-3.9
           packages:
             - clang-3.9
       env:
         - MATRIX_EVAL="CC=clang-3.9"
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-xenial-4.0
           packages:
             - clang-4.0
       env:
         - MATRIX_EVAL="CC=clang-4.0"
 
     - os: linux
+      dist: xenial
       addons:
         apt:
           sources:
