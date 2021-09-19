@@ -2,9 +2,9 @@
 
 The goal of this project is to implement a virtual hard drive disk.
 
-## Travis
+## CI
 
-[![Build Status](https://travis-ci.com/PamplemousseMR/VirtualDisk.svg?branch=master)](https://travis-ci.com/PamplemousseMR/VirtualDisk)
+![Build Status](https://github.com/PamplemousseMR/VirtualDisk/actions/workflows/build.yml/badge.svg)
 
 ## Getting Started
 

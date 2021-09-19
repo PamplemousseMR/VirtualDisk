@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.OS }}
+
+    strategy:
+      matrix:
+        name: [ubuntu_18-04_gcc4-8, ubuntu_18-04_gcc5, ubuntu_18-04_gcc6, ubuntu_18-04_gcc7, ubuntu_18-04_gcc8, 
+               ubuntu_20-04_gcc7, ubuntu_20-04_gcc8, ubuntu_20-04_gcc9, ubuntu_20-04_gcc10]
+        include:
+        - name: ubuntu_18-04_gcc4-8
+          OS: ubuntu-18.04
+          COMPILER: gcc-4.8
+
+        - name: ubuntu_18-04_gcc5
+          OS: ubuntu-18.04
+          COMPILER: gcc-5
+
+        - name: ubuntu_18-04_gcc6
+          OS: ubuntu-18.04
+          COMPILER: gcc-6
+
+        - name: ubuntu_18-04_gcc7
+          OS: ubuntu-18.04
+          COMPILER: gcc-7
+
+        - name: ubuntu_18-04_gcc8
+          OS: ubuntu-18.04
+          COMPILER: gcc-8
+
+        - name: ubuntu_20-04_gcc7
+          OS: ubuntu-20.04
+          COMPILER: gcc-7
+
+        - name: ubuntu_20-04_gcc8
+          OS: ubuntu-20.04
+          COMPILER: gcc-8
+
+        - name: ubuntu_20-04_gcc9
+          OS: ubuntu-20.04
+          COMPILER: gcc-9
+
+        - name: ubuntu_20-04_gcc10
+          OS: ubuntu-20.04
+          COMPILER: gcc-10
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Package
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+              sudo apt-get update
+              sudo apt-get --assume-yes install ${{ matrix.COMPILER }}
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+              echo "$RUNNER_OS not supported"
+              exit 1
+          else
+              echo "$RUNNER_OS not supported"
+              exit 1
+          fi
+
+      - name: Build
+        run: |
+          export CC=${{ matrix.COMPILER }}
+          make all
+          make clean
